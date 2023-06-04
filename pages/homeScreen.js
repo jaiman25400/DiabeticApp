@@ -16,15 +16,9 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Home Screen</Text>
-      <Button
-        title="Go to About"
-        onPress={() => navigation.navigate("Login")}
-      />
-      <View>
-        <Text>Count: {count}</Text>
-        <Button title="Increment" onPress={increment} />
-        <Button title="Decrement" onPress={decrement} />
-      </View>
+      <Text>Count: {count}</Text>
+      <Button title="Increment" onPress={increment} />
+      <Button title="Decrement" onPress={decrement} />
     </View>
   );
 }
