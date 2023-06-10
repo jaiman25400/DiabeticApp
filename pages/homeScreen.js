@@ -1,24 +1,35 @@
 import React from "react";
 import { Button, View, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-export default function HomeScreen({ navigation }) {
-  const count = useSelector((state) => state.counter.count);
+import { fetchFoodList } from "../redux/actions/actions";
+import { useEffect, useState } from "react";
+
+export default function HomeScreen() {
+  const appState = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const increment = () => {
-    dispatch({ type: "INCREMENT" });
-  };
+  const [list, setlist] = useState(null);
 
-  const decrement = () => {
-    dispatch({ type: "DECREMENT" });
+  useEffect(() => {
+    appState?.api?.foodList ? setlist(appState?.api?.foodList) : null;
+    console.log(appState);
+  }, [appState]);
+
+  const getList = () => {
+    const params = {
+      dataType: ["Foundation", "SR Legacy"],
+      pageSize: 25,
+      pageNumber: 2,
+      sortBy: "dataType.keyword",
+      sortOrder: "asc",
+    };
+    dispatch(fetchFoodList(params));
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Home Screen</Text>
-      <Text>Count: {count}</Text>
-      <Button title="Increment" onPress={increment} />
-      <Button title="Decrement" onPress={decrement} />
+      <Button title="Food List" onPress={getList} />
     </View>
   );
 }

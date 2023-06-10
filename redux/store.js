@@ -1,11 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 
-import counterReducer from "./reducers/counterReducer";
+import apiRequest from "./reducers/apiReducer";
 
 const rootReducer = combineReducers({
-  counter: counterReducer,
-  //slice2: reducer2,
+  api: apiRequest,
 });
 
 const store = configureStore({ reducer: rootReducer });
