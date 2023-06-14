@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Button, View, Text, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchFoodList } from "../redux/actions/actions";
-import { useEffect, useState } from "react";
 import { firebase } from "../config";
 import styles from "./loginScreen";
 
-export default function HomeScreen({ navigation }) {
-  const count = useSelector((state) => state.counter.count);
+export default function HomeScreen({}) {
   const dispatch = useDispatch();
   const appState = useSelector((state) => state);
 
