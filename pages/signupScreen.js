@@ -9,48 +9,11 @@ import {
 } from "react-native";
 import { firebase } from "../config";
 
-const signupScreen = () => {
+const SignupScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
-  //   let registerUser = async (email, password, firstName, lastName) => {
-  //     await firebase
-  //       .auth()
-  //       .createUserWithEmailAndPassword(email, password)
-  //       .then(() => {
-  //         firebase
-  //           .auth()
-  //           .currentUser.sendEmailVerification({
-  //             handleCodeInApp: true,
-  //             url: "https://diabetic-app1.firebaseapp.com",
-  //           })
-  //           .then(() => {
-  //             // Email verification sent
-  //             alert("Email Verification sent.");
-  //             // Add user credentials to Firestore database if email is verified
-  //             firebase
-  //               .firestore()
-  //               .collection("users")
-  //               .doc(firebase.auth().currentUser.uid)
-  //               .set({
-  //                 firstName,
-  //                 lastName,
-  //                 email,
-  //               })
-  //               .catch((err) => {
-  //                 alert(err.message);
-  //               });
-  //           })
-  //           .catch((err) => {
-  //             alert(err);
-  //           });
-  //       })
-  //       .catch((err) => {
-  //         alert(err.message);
-  //       });
-  //   };
 
   let registerUser = async (email, password, firstName, lastName) => {
     await firebase
@@ -126,6 +89,8 @@ const signupScreen = () => {
   );
 };
 
+export default SignupScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -155,5 +120,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default signupScreen;

@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 const Drawer = createDrawerNavigator();
 
 export default function NavigationStack() {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const userState = useSelector((state) => state.user.user);
 
@@ -25,12 +25,7 @@ export default function NavigationStack() {
     if (isLoading) setIsLoading(false);
   }
 
-  const handleLogout = () => {
-    firebase.auth().signOut();
-  };
-
   useEffect(() => {
-    console.log("UserEff Navi");
     const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
     return unsubscribe;
@@ -53,19 +48,7 @@ export default function NavigationStack() {
                 headerTitle: (props) => <HeaderLogo {...props} />,
               }}
             />
-
-            <Drawer.Screen name="Logout" options={{ drawerLabel: () => null }}>
-              {() => (
-                <View>
-                  {" "}
-                  Hello
-                  <TouchableOpacity onPress={handleLogout}>
-                    <Text style={styles.buttonText}>Logout</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </Drawer.Screen>
-          </Drawer.Navigator>{" "}
+          </Drawer.Navigator>
         </>
       ) : (
         <Drawer.Navigator>
