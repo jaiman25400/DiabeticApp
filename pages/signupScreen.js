@@ -1,56 +1,13 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  Button,
-} from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
 import { firebase } from "../config";
 
-const signupScreen = () => {
+const SignupScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-
-  //   let registerUser = async (email, password, firstName, lastName) => {
-  //     await firebase
-  //       .auth()
-  //       .createUserWithEmailAndPassword(email, password)
-  //       .then(() => {
-  //         firebase
-  //           .auth()
-  //           .currentUser.sendEmailVerification({
-  //             handleCodeInApp: true,
-  //             url: "https://diabetic-app1.firebaseapp.com",
-  //           })
-  //           .then(() => {
-  //             // Email verification sent
-  //             alert("Email Verification sent.");
-  //             // Add user credentials to Firestore database if email is verified
-  //             firebase
-  //               .firestore()
-  //               .collection("users")
-  //               .doc(firebase.auth().currentUser.uid)
-  //               .set({
-  //                 firstName,
-  //                 lastName,
-  //                 email,
-  //               })
-  //               .catch((err) => {
-  //                 alert(err.message);
-  //               });
-  //           })
-  //           .catch((err) => {
-  //             alert(err);
-  //           });
-  //       })
-  //       .catch((err) => {
-  //         alert(err.message);
-  //       });
-  //   };
 
   let registerUser = async (email, password, firstName, lastName) => {
     await firebase
@@ -93,35 +50,36 @@ const signupScreen = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="First Name"
+        label="First Name"
         onChangeText={(text) => setFirstName(text)}
         value={firstName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
+        label="Last Name"
         onChangeText={(text) => setLastName(text)}
         value={lastName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        label="Email"
         onChangeText={(text) => setEmail(text)}
         value={email}
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        label="Password"
         onChangeText={(text) => setPassword(text)}
         value={password}
         secureTextEntry
       />
-      <TouchableOpacity
+      <Button
+        mode="contained"
         style={styles.button}
         onPress={() => registerUser(email, password, firstName, lastName)}
       >
-        <Text style={styles.buttonText}>Signup</Text>
-      </TouchableOpacity>
+        Signup
+      </Button>
     </View>
   );
 };
@@ -136,9 +94,6 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
     marginBottom: 10,
     paddingHorizontal: 10,
   },
@@ -146,14 +101,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 40,
     borderRadius: 6,
-    backgroundColor: "#4CAF50",
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-  },
 });
 
-export default signupScreen;
+export default SignupScreen;
