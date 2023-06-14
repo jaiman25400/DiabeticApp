@@ -84,6 +84,8 @@ const SignupScreen = () => {
   );
 };
 
+export default SignupScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -105,5 +107,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-export default SignupScreen;

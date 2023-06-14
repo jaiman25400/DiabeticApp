@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button, View, Text, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
+import { fetchFoodList } from "../redux/actions/actions";
 import { firebase } from "../config";
 import styles from "./loginScreen";
 
-export default function HomeScreen({ navigation }) {
-  const count = useSelector((state) => state.counter.count);
+export default function HomeScreen({}) {
   const dispatch = useDispatch();
+  const appState = useSelector((state) => state);
+
+  const [list, setlist] = useState(null);
 
   const [name, setName] = useState("");
 
@@ -14,8 +17,20 @@ export default function HomeScreen({ navigation }) {
     dispatch({ type: "INCREMENT" });
   };
 
-  const decrement = () => {
-    dispatch({ type: "DECREMENT" });
+  useEffect(() => {
+    appState?.api?.foodList ? setlist(appState?.api?.foodList) : null;
+    console.log(appState);
+  }, [appState]);
+
+  const getList = () => {
+    const params = {
+      dataType: ["Foundation", "SR Legacy"],
+      pageSize: 25,
+      pageNumber: 2,
+      sortBy: "dataType.keyword",
+      sortOrder: "asc",
+    };
+    dispatch(fetchFoodList(params));
   };
 
   useEffect(() => {
@@ -36,17 +51,8 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Hello, {name.firstName}</Text>
-      <Text>Count: {count}</Text>
-      <Button title="Increment" onPress={increment} />
-      <Button title="Decrement" onPress={decrement} />
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => firebase.auth().signOut()}
-      >
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+      <Text>Home Screen</Text>
+      <Button title="Food List" onPress={getList} />
     </View>
   );
 }
