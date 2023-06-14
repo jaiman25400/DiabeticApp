@@ -1,14 +1,23 @@
-import React from "react";
-import { Button, View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Button, View, Text, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchFoodList } from "../redux/actions/actions";
 import { useEffect, useState } from "react";
+import { firebase } from "../config";
+import styles from "./loginScreen";
 
-export default function HomeScreen() {
-  const appState = useSelector((state) => state);
+export default function HomeScreen({ navigation }) {
+  const count = useSelector((state) => state.counter.count);
   const dispatch = useDispatch();
+  const appState = useSelector((state) => state);
 
   const [list, setlist] = useState(null);
+
+  const [name, setName] = useState("");
+
+  const increment = () => {
+    dispatch({ type: "INCREMENT" });
+  };
 
   useEffect(() => {
     appState?.api?.foodList ? setlist(appState?.api?.foodList) : null;
@@ -25,6 +34,22 @@ export default function HomeScreen() {
     };
     dispatch(fetchFoodList(params));
   };
+
+  useEffect(() => {
+    // Used for printing User name on Home Screen
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setName(snapshot.data());
+        } else {
+          console.log("User Does not exist");
+        }
+      });
+  }, []);
 
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
