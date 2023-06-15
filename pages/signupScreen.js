@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { firebase } from "../config";
 
-const SignupScreen = () => {
+const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -22,6 +27,7 @@ const SignupScreen = () => {
           })
           .then(() => {
             alert("Email Verification sent. Please check Spam Folder");
+            navigation.navigate("Login");
           })
           .catch((err) => {
             alert(err);
@@ -47,40 +53,44 @@ const SignupScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        label="First Name"
-        onChangeText={(text) => setFirstName(text)}
-        value={firstName}
-      />
-      <TextInput
-        style={styles.input}
-        label="Last Name"
-        onChangeText={(text) => setLastName(text)}
-        value={lastName}
-      />
-      <TextInput
-        style={styles.input}
-        label="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        label="Password"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry
-      />
-      <Button
-        mode="contained"
-        style={styles.button}
-        onPress={() => registerUser(email, password, firstName, lastName)}
-      >
-        Signup
-      </Button>
-    </View>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+          <TextInput
+            style={styles.input}
+            label="First Name"
+            onChangeText={(text) => setFirstName(text)}
+            value={firstName}
+          />
+          <TextInput
+            style={styles.input}
+            label="Last Name"
+            onChangeText={(text) => setLastName(text)}
+            value={lastName}
+          />
+          <TextInput
+            style={styles.input}
+            label="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+          <TextInput
+            style={styles.input}
+            label="Password"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry
+          />
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={() => registerUser(email, password, firstName, lastName)}
+          >
+            Signup
+          </Button>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -89,18 +99,19 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 0,
   },
   input: {
-    width: "100%",
+    width: 300,
     height: 40,
     marginBottom: 10,
     paddingHorizontal: 10,
   },
   button: {
-    width: "100%",
+    width: 300,
     height: 40,
     borderRadius: 6,
     justifyContent: "center",

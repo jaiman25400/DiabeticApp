@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Image,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { firebase } from "../config";
 import { useDispatch } from "react-redux";
@@ -50,43 +56,45 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.container}>
-        <Image source={require("../assets/icon.png")} style={styles.image} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+          <Image source={require("../assets/icon.png")} style={styles.image} />
 
-        <TextInput
-          style={styles.input}
-          label="Email"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-        />
-        <TextInput
-          style={styles.input}
-          label="Password"
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-        />
-        <Button
-          mode="contained"
-          style={styles.button}
-          onPress={() => loginUser(email, password)}
-        >
-          Login
-        </Button>
+          <TextInput
+            style={styles.input}
+            label="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+          <TextInput
+            style={styles.input}
+            label="Password"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry={true}
+          />
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={() => loginUser(email, password)}
+          >
+            Login
+          </Button>
 
-        <Button
-          style={{ marginTop: 20 }}
-          onPress={() => navigation.navigate("Signup")}
-        >
-          Don't have an account? Register Now
-        </Button>
+          <Button
+            style={{ marginTop: 20 }}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            Don't have an account? Register Now
+          </Button>
 
-        <Button style={{ marginTop: 20 }} onPress={forgetPassword}>
-          Forget Password?
-        </Button>
-      </View>
-    </ScrollView>
+          <Button style={{ marginTop: 20 }} onPress={forgetPassword}>
+            Forget Password?
+          </Button>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -98,14 +106,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
-    width: "100%",
-    height: 40,
+    width: 250,
+    height: 50, // Increase the height for larger input fields
     marginBottom: 10,
     paddingHorizontal: 10,
   },
   button: {
-    width: "100%",
-    height: 40,
+    width: 250,
+    height: 50, // Increase the height for larger buttons
     borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",
