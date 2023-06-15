@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Button, View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
+import { Button, TouchableRipple } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchFoodList } from "../redux/actions/actions";
 import { firebase } from "../config";
 import styles from "./loginScreen";
 
-export default function HomeScreen({}) {
+export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const appState = useSelector((state) => state);
 
-  const [list, setlist] = useState(null);
+  const [list, setList] = useState(null);
 
   const [name, setName] = useState("");
 
@@ -18,7 +19,7 @@ export default function HomeScreen({}) {
   };
 
   useEffect(() => {
-    appState?.api?.foodList ? setlist(appState?.api?.foodList) : null;
+    appState?.api?.foodList ? setList(appState?.api?.foodList) : null;
     console.log(appState);
   }, [appState]);
 
@@ -49,10 +50,27 @@ export default function HomeScreen({}) {
       });
   }, []);
 
+  const logout = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      })
+      .catch((error) => {
+        console.log("Logout error:", error);
+      });
+  };
+
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Home Screen</Text>
-      <Button title="Food List" onPress={getList} />
+      {/* <Text>Welcome, {name}</Text>
+      <Button mode="contained" onPress={getList}>
+        Food List
+      </Button> */}
     </View>
   );
 }

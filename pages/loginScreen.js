@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
-  TouchableOpacity,
-  TextInput,
   Image,
   StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
 import { firebase } from "../config";
 import { useDispatch } from "react-redux";
 
@@ -23,7 +23,7 @@ export default function LoginScreen({ navigation }) {
         console.log("user Cre:", userCredential);
         const { uid, email } = userCredential.user;
         const user = { uid, email };
-        dispatch({ type: "Login", payload: user }); // Dispatch Login event after succesfull sign IN
+        dispatch({ type: "Login", payload: user }); // Dispatch Login event after successful sign-in
       })
       .catch((error) => {
         if (error.code === "auth/user-not-found") {
@@ -48,7 +48,7 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .sendPasswordResetEmail(email)
       .then(() => {
-        alert("Password reset email sent ");
+        alert("Password reset email sent");
       })
       .catch((err) => {
         alert(err);
@@ -56,49 +56,45 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require("../assets/icon.png")} style={styles.image} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+          <Image source={require("../assets/icon.png")} style={styles.image} />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry={true}
-      />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => loginUser(email, password)}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            label="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+          <TextInput
+            style={styles.input}
+            label="Password"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry={true}
+          />
+          <Button
+            mode="contained"
+            style={styles.button}
+            onPress={() => loginUser(email, password)}
+          >
+            Login
+          </Button>
 
-      <TouchableOpacity
-        style={{ marginTop: 20 }}
-        onPress={() => navigation.navigate("Signup")}
-      >
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-          Don't have account? Register Now{" "}
-        </Text>
-      </TouchableOpacity>
+          <Button
+            style={{ marginTop: 20 }}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            Don't have an account? Register Now
+          </Button>
 
-      <TouchableOpacity
-        style={{ marginTop: 20 }}
-        onPress={() => {
-          forgetPassword();
-        }}
-      >
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-          Forget Password?{" "}
-        </Text>
-      </TouchableOpacity>
-    </View>
+          <Button style={{ marginTop: 20 }} onPress={forgetPassword}>
+            Forget Password?
+          </Button>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -110,25 +106,17 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
-    width: "100%",
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
+    width: 250,
+    height: 50, // Increase the height for larger input fields
     marginBottom: 10,
     paddingHorizontal: 10,
   },
   button: {
-    width: "100%",
-    height: 40,
+    width: 250,
+    height: 50, // Increase the height for larger buttons
     borderRadius: 6,
-    backgroundColor: "#4CAF50",
     justifyContent: "center",
     alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
   },
   image: {
     width: 200,

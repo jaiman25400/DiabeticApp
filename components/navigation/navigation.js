@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import {
   DrawerContentScrollView,
   createDrawerNavigator,
+  DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
 import { LightTheme } from "../../utils/theme";
@@ -36,11 +37,28 @@ export default function NavigationStack() {
     return null;
   }
 
+  const CustomDrawerContent = (props) => {
+    return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+        <DrawerItem
+          label="Logout"
+          onPress={() => {
+            firebase.auth().signOut();
+          }}
+        />
+      </DrawerContentScrollView>
+    );
+  };
+
   return (
     <NavigationContainer theme={LightTheme}>
       {user && user?.emailVerified ? (
         <>
-          <Drawer.Navigator initialRouteName="Home">
+          <Drawer.Navigator
+            initialRouteName="Home"
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
+          >
             <Drawer.Screen
               name="Home"
               component={HomeScreen}
