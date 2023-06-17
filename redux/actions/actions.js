@@ -1,24 +1,31 @@
 import axios from "axios";
+import { API_KEY } from "@env";
 import {
-  fetchFoodListRequest,
-  fetchFoodListSuccess,
-  fetchFoodListFailure,
+  fetchFoodSearch,
+  fetchFoodSearchSuccess,
+  fetchFoodSearchFailure,
+  clearFoodSearch,
 } from "./actionTypes";
+import { cleanSearchData } from "../../utils/cleanSearchData";
 
-const apiKey = "CMyTqDht6VTOge3I2aU6JSJ7rKOTaYLZvtTRplFD";
-const apiUrl_foodlist = "https://api.nal.usda.gov/fdc/v1/foods/list";
+const apiUrl_foodSearch = "https://api.nal.usda.gov/fdc/v1/foods/search";
 
-export const fetchFoodList = (params) => {
-  let config = { params: { ...params, api_key: apiKey } };
-  console.log("config:", config);
-
+export const fetchFoodSearchAPI = (params) => {
+  let config = { params: { ...params, api_key: API_KEY } };
   return async (dispatch) => {
-    dispatch(fetchFoodListRequest());
+    dispatch(fetchFoodSearch());
     try {
-      const response = await axios.get(apiUrl_foodlist, config);
-      dispatch(fetchFoodListSuccess(response.data));
+      const response = await axios.get(apiUrl_foodSearch, config);
+      const updatedData = cleanSearchData(response.data);
+      dispatch(fetchFoodSearchSuccess(updatedData));
     } catch (error) {
-      dispatch(fetchFoodListFailure(error.message));
+      dispatch(fetchFoodSearchFailure(error.message));
     }
+  };
+};
+
+export const clearFoodSearchResults = () => {
+  return (dispatch) => {
+    dispatch(clearFoodSearch());
   };
 };

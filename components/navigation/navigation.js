@@ -13,6 +13,7 @@ import { firebase } from "../../config";
 import React, { useEffect, useState } from "react";
 import signupScreen from "../../pages/signupScreen";
 import { useSelector } from "react-redux";
+import HomeNavigation from "./homeNavigation";
 
 const Drawer = createDrawerNavigator();
 
@@ -61,7 +62,7 @@ export default function NavigationStack() {
           >
             <Drawer.Screen
               name="Home"
-              component={HomeScreen}
+              component={HomeNavigation}
               options={{
                 headerTitle: (props) => <HeaderLogo {...props} />,
               }}
