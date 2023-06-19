@@ -13,6 +13,8 @@ import { firebase } from "../../config";
 import React, { useEffect, useState } from "react";
 import signupScreen from "../../pages/signupScreen";
 import { useSelector } from "react-redux";
+import UserOnboardingScreen from "../../pages/onBoarding/userInfo";
+import ProfileScreen from "../../pages/profileScreen";
 import HomeNavigation from "./homeNavigation";
 
 const Drawer = createDrawerNavigator();
@@ -20,7 +22,8 @@ const Drawer = createDrawerNavigator();
 export default function NavigationStack() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const userState = useSelector((state) => state.user.user);
+
+  const userState = useSelector((state) => state.user);
 
   function onAuthStateChanged(user) {
     setUser(user);
@@ -29,7 +32,7 @@ export default function NavigationStack() {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
-
+    console.log("user In Redux", userState);
     return unsubscribe;
   }, [userState]);
 
@@ -53,28 +56,40 @@ export default function NavigationStack() {
   };
 
   return (
-    <NavigationContainer theme={LightTheme}>
-      {user && user?.emailVerified ? (
-        <>
-          <Drawer.Navigator
-            initialRouteName="Home"
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
-          >
-            <Drawer.Screen
-              name="Home"
-              component={HomeNavigation}
-              options={{
-                headerTitle: (props) => <HeaderLogo {...props} />,
-              }}
-            />
+    <>
+      <NavigationContainer theme={LightTheme}>
+        {user && user?.emailVerified ? (
+          <>
+            {userState?.user?.isFirstTimeLogin ? (
+              <Drawer.Navigator>
+                <Drawer.Screen
+                  name="OnBoard"
+                  component={UserOnboardingScreen}
+                />
+              </Drawer.Navigator>
+            ) : (
+              <Drawer.Navigator
+                initialRouteName={"Home"}
+                drawerContent={(props) => <CustomDrawerContent {...props} />}
+              >
+                <Drawer.Screen
+                  name="Home"
+                  component={HomeNavigation}
+                  options={{
+                    headerTitle: (props) => <HeaderLogo {...props} />,
+                  }}
+                />
+                <Drawer.Screen name="Profile" component={ProfileScreen} />
+              </Drawer.Navigator>
+            )}
+          </>
+        ) : (
+          <Drawer.Navigator>
+            <Drawer.Screen name="Login" component={LoginScreen} />
+            <Drawer.Screen name="Signup" component={signupScreen} />
           </Drawer.Navigator>
-        </>
-      ) : (
-        <Drawer.Navigator>
-          <Drawer.Screen name="Login" component={LoginScreen} />
-          <Drawer.Screen name="Signup" component={signupScreen} />
-        </Drawer.Navigator>
-      )}
-    </NavigationContainer>
+        )}
+      </NavigationContainer>
+    </>
   );
 }

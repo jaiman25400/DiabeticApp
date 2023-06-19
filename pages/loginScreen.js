@@ -6,7 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import { firebase } from "../config";
 import { useDispatch } from "react-redux";
 
@@ -23,7 +23,48 @@ export default function LoginScreen({ navigation }) {
         console.log("user Cre:", userCredential);
         const { uid, email } = userCredential.user;
         const user = { uid, email };
-        dispatch({ type: "Login", payload: user }); // Dispatch Login event after successful sign-in
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const userData = doc.data();
+              console.log("Check if First time ?", userData);
+              const isFirstTimeLogin = userData.isFirstTimeLogin || false;
+
+              if (isFirstTimeLogin) {
+                const userWithNewFlag = { ...user, isFirstTimeLogin };
+                console.log("Check New Dispact :", userWithNewFlag);
+                dispatch({ type: "Login", payload: userWithNewFlag }); // Dispatch Login event after successful sign-in
+
+                // User is logging in for the first time, perform necessary actions
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(uid)
+                  .update({
+                    // isFirstTimeLogin: false,
+                  })
+                  .then(() => {
+                    // Perform necessary actions for first-time login
+                  })
+                  .catch((error) => {
+                    console.log(
+                      "Error updating isFirstTimeLogin field:",
+                      error
+                    );
+                  });
+              } else {
+                const userWithNewFlag = { ...user, isFirstTimeLogin };
+                dispatch({ type: "Login", payload: userWithNewFlag }); // Dispatch Login event after successful sign-in
+              }
+            }
+          })
+          .catch((error) => {
+            console.log("Error retrieving user document:", error);
+          });
       })
       .catch((error) => {
         if (error.code === "auth/user-not-found") {
@@ -38,7 +79,10 @@ export default function LoginScreen({ navigation }) {
           );
         } else {
           // Handle generic error case
-          alert("An error occurred during login. Please try again later.");
+          alert(
+            "An error occurred during login. Please try again later.",
+            error
+          );
         }
       });
   };

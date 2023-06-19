@@ -41,6 +41,7 @@ const SignupScreen = ({ navigation }) => {
                 firstName,
                 lastName,
                 email,
+                isFirstTimeLogin: true,
               });
           })
           .catch((err) => {
