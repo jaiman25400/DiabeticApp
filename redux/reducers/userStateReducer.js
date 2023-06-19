@@ -14,6 +14,11 @@ const userStateReducer = (state = initialState, action) => {
         isLoading: false,
         error: null,
       };
+    case "UpdateUserFlag":
+      return {
+        ...state,
+        user: action.payload,
+      };
     case "Logout":
       return {
         ...state,

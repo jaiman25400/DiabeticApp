@@ -20,7 +20,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     appState?.api?.foodList ? setList(appState?.api?.foodList) : null;
-    console.log(appState);
+    console.log("App state in Home scree", appState);
   }, [appState]);
 
   const getList = () => {
@@ -50,27 +50,11 @@ export default function HomeScreen({ navigation }) {
       });
   }, []);
 
-  const logout = () => {
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Login" }],
-        });
-      })
-      .catch((error) => {
-        console.log("Logout error:", error);
-      });
-  };
-
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      {/* <Text>Welcome, {name}</Text>
       <Button mode="contained" onPress={getList}>
         Food List
-      </Button> */}
+      </Button>
     </View>
   );
 }
