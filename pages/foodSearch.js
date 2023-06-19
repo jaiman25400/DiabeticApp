@@ -132,7 +132,9 @@ const FoodSearch = ({ navigation }) => {
         elevation={5}
         style={{ marginBottom: 10 }}
       />
-      {foodSearchData?.loading ? null : ( // <ActivityIndicator size="large" style={styles.activityIndicator} />
+      {foodSearchData?.loading ? (
+        <ActivityIndicator size="large" style={styles.activityIndicator} />
+      ) : (
         <ScrollView style={styles.scrollViewContainer}>
           <List.Section>
             {foodSearchData?.foodSearch?.totalHits ? (
