@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { useRoute } from "@react-navigation/native";
 import {
   Searchbar,
   List,
@@ -12,16 +13,17 @@ import {
 import {
   fetchFoodSearchAPI,
   clearFoodSearchResults,
+  fetchFoodItemByIdAPI,
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 
-const FoodSearch = () => {
+const FoodSearch = ({ navigation }) => {
   const theme = useTheme();
-
+  const route = useRoute();
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
-  console.log("state", foodSearchData);
 
+  const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(null);
@@ -35,6 +37,9 @@ const FoodSearch = () => {
     if (foodSearchData?.foodSearch?.foods?.length > 0) {
       setTotalPages(foodSearchData?.foodSearch?.totalPages);
       setData(foodSearchData?.foodSearch?.foods);
+    }
+    if (foodSearchData?.foodItem?.fdcId && foodSearchData.success) {
+      navigateToFoodItem();
     }
   }, [foodSearchData]);
 
@@ -68,6 +73,12 @@ const FoodSearch = () => {
     }
   };
 
+  const navigateToFoodItem = () => {
+    navigation.navigate("AddFood", {
+      params,
+    });
+  };
+
   const getSearchResult = (page) => {
     const params = {
       query: searchQuery,
@@ -78,6 +89,14 @@ const FoodSearch = () => {
       sortOrder: "asc",
     };
     dispatch(fetchFoodSearchAPI(params));
+  };
+
+  const onFoodItem = (item) => {
+    const params = {
+      format: "abridged",
+      nutrients: 205,
+    };
+    dispatch(fetchFoodItemByIdAPI(params, item?.fdcId, "BREAKFAST"));
   };
 
   const clearSearch = () => {
@@ -113,9 +132,7 @@ const FoodSearch = () => {
         elevation={5}
         style={{ marginBottom: 10 }}
       />
-      {foodSearchData?.loading ? (
-        <ActivityIndicator size="large" style={styles.activityIndicator} />
-      ) : (
+      {foodSearchData?.loading ? null : ( // <ActivityIndicator size="large" style={styles.activityIndicator} />
         <ScrollView style={styles.scrollViewContainer}>
           <List.Section>
             {foodSearchData?.foodSearch?.totalHits ? (
@@ -126,6 +143,7 @@ const FoodSearch = () => {
             {data?.map((item) => (
               <View key={item.fdcId}>
                 <List.Item
+                  onPress={() => onFoodItem(item)}
                   key={item.fdcId}
                   title={item.description}
                   description={item.foodCategory}
