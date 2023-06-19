@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { Button, TouchableRipple } from "react-native-paper";
+import { ScrollView, StyleSheet } from "react-native";
+import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchFoodList } from "../redux/actions/actions";
-import { firebase } from "../config";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
