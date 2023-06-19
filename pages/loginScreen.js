@@ -122,6 +122,7 @@ export default function LoginScreen({ navigation }) {
             mode="contained"
             style={styles.button}
             onPress={() => loginUser(email, password)}
+            contentStyle={styles.buttonContent}
           >
             Login
           </Button>
@@ -156,11 +157,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    width: 250,
-    height: 50, // Increase the height for larger buttons
     borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",
+  },
+  buttonContent: {
+    height: 50,
+    width: 250,
   },
   image: {
     width: 200,

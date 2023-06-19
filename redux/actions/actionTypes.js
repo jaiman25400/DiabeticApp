@@ -1,15 +1,26 @@
-const fetchFoodListRequest = () => ({
-  type: "FETCH_FOOD_LIST_REQUEST",
+import { TYPES } from "../constants";
+
+const fetchFoodSearch = () => ({
+  type: TYPES.FETCH_FOOD_SEARCH_REQUEST,
 });
 
-const fetchFoodListSuccess = (data) => ({
-  type: "FETCH_FOOD_LIST_SUCCESS",
+const fetchFoodSearchSuccess = (data) => ({
+  type: TYPES.FETCH_FOOD_SEARCH_SUCCESS,
   payload: data,
 });
 
-const fetchFoodListFailure = (error) => ({
-  type: "FETCH_FOOD_LIST_FAILURE",
+const fetchFoodSearchFailure = (error) => ({
+  type: TYPES.FETCH_FOOD_SEARCH_FAILURE,
   payload: error,
 });
 
-export { fetchFoodListRequest, fetchFoodListSuccess, fetchFoodListFailure };
+const clearFoodSearch = () => ({
+  type: TYPES.CLEAR_FOOD_SEARCH,
+});
+
+export {
+  fetchFoodSearch,
+  fetchFoodSearchSuccess,
+  fetchFoodSearchFailure,
+  clearFoodSearch,
+};

@@ -15,6 +15,7 @@ import signupScreen from "../../pages/signupScreen";
 import { useSelector } from "react-redux";
 import UserOnboardingScreen from "../../pages/onBoarding/userInfo";
 import ProfileScreen from "../../pages/profileScreen";
+import HomeNavigation from "./homeNavigation";
 
 const Drawer = createDrawerNavigator();
 
@@ -73,7 +74,7 @@ export default function NavigationStack() {
               >
                 <Drawer.Screen
                   name="Home"
-                  component={HomeScreen}
+                  component={HomeNavigation}
                   options={{
                     headerTitle: (props) => <HeaderLogo {...props} />,
                   }}
