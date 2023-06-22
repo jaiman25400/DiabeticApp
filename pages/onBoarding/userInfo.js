@@ -85,17 +85,13 @@ const UserOnboardingScreen = ({ navigation }) => {
           subtitle: "This is the Third slide of the Onboarding Swiper.",
         },
       ]}
-      onDone={() =>
-        dispatch({
-          type: "UpdateUserFlag",
-          payload: { ...userState, isFirstTimeLogin: false },
-        })
-      }
+      onDone={() => navigation.navigate("userInfo")}
       onSkip={() =>
-        dispatch({
-          type: "UpdateUserFlag",
-          payload: { ...userState, isFirstTimeLogin: false },
-        })
+        // dispatch({
+        //   type: "UpdateUserFlag",
+        //   payload: { ...userState, isFirstTimeLogin: false },
+        // })
+        navigation.navigate("userInfo")
       }
     />
   );
