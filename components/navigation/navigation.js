@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import UserOnboardingScreen from "../../pages/onBoarding/userInfo";
 import ProfileScreen from "../../pages/profileScreen";
 import HomeNavigation from "./homeNavigation";
+import GetUserDetails from "../../pages/onBoarding/getUserDetails";
 
 const Drawer = createDrawerNavigator();
 
@@ -32,7 +33,7 @@ export default function NavigationStack() {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
-    console.log("user In Redux", userState);
+    console.log("Navi Eff :", userState);
     return unsubscribe;
   }, [userState]);
 
@@ -66,6 +67,7 @@ export default function NavigationStack() {
                   name="OnBoard"
                   component={UserOnboardingScreen}
                 />
+                <Drawer.Screen name="userInfo" component={GetUserDetails} />
               </Drawer.Navigator>
             ) : (
               <Drawer.Navigator

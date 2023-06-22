@@ -3,6 +3,8 @@ const initialState = {
   user: null,
   isLoading: false,
   error: null,
+  userDataInfo: null,
+  userProfInfo: null,
 };
 
 const userStateReducer = (state = initialState, action) => {
@@ -11,6 +13,20 @@ const userStateReducer = (state = initialState, action) => {
       return {
         ...state,
         user: action.payload,
+        isLoading: false,
+        error: null,
+      };
+    case "userData":
+      return {
+        ...state,
+        userDataInfo: action.payload,
+        isLoading: false,
+        error: null,
+      };
+    case "userProfileData":
+      return {
+        ...state,
+        userProfInfo: action.payload,
         isLoading: false,
         error: null,
       };

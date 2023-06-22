@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const dispatch = useDispatch();
 
   let loginUser = (email, password) => {
@@ -45,7 +46,7 @@ export default function LoginScreen({ navigation }) {
                   .collection("users")
                   .doc(uid)
                   .update({
-                    // isFirstTimeLogin: false,
+                    isFirstTimeLogin: false,
                   })
                   .then(() => {
                     // Perform necessary actions for first-time login
@@ -57,6 +58,47 @@ export default function LoginScreen({ navigation }) {
                     );
                   });
               } else {
+                const fetchUserData = async () => {
+                  const user = firebase.auth().currentUser;
+                  console.log("User From FB Login :", user);
+                  if (user) {
+                    const userId = user.uid;
+                    const userDocRef = firebase
+                      .firestore()
+                      .collection("users")
+                      .doc(userId);
+                    const userProfRef = firebase
+                      .firestore()
+                      .collection("userProfile")
+                      .doc(userId);
+
+                    const userDoc = await userDocRef.get();
+                    const userProf = await userProfRef.get();
+
+                    if (userDoc.exists) {
+                      const userData = userDoc.data();
+                      dispatch({
+                        type: "userData",
+                        payload: { userData },
+                      });
+                    } else {
+                    }
+
+                    if (userProf.exists) {
+                      const userProfData = userProf.data();
+                      dispatch({
+                        type: "userProfileData",
+                        payload: { userProfData },
+                      });
+                    } else {
+                      console.log("User Prof data data not found.");
+                    }
+                  } else {
+                    console.log("No user is currently logged in.");
+                  }
+                };
+
+                fetchUserData();
                 const userWithNewFlag = { ...user, isFirstTimeLogin };
                 dispatch({ type: "Login", payload: userWithNewFlag }); // Dispatch Login event after successful sign-in
               }
