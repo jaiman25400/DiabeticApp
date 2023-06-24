@@ -10,22 +10,112 @@ import {
 import { TextInput, Button, Title, Subheading } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { firebase } from "../config";
+import { TimePickerModal } from "react-native-paper-dates";
 
 const ProfileScreen = ({ navigation }) => {
   const [userStateData, setUserStateData] = useState({});
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
-  const [breakfastStartHour, setBreakfastStartHour] = useState("");
-  const [breakfastEndHour, setBreakfastEndHour] = useState("");
-  const [lunchStartHour, setLunchStartHour] = useState("");
-  const [lunchEndHour, setLunchEndHour] = useState("");
-  const [dinnerStartHour, setDinnerStartHour] = useState("");
-  const [dinnerEndHour, setDinnerEndHour] = useState("");
+  const [breakfastStartHour, setBreakfastStartHour] = useState({});
+  const [breakfastEndHour, setBreakfastEndHour] = useState({});
+  const [lunchStartHour, setLunchStartHour] = useState({});
+  const [lunchEndHour, setLunchEndHour] = useState({});
+  const [dinnerStartHour, setDinnerStartHour] = useState({});
+  const [dinnerEndHour, setDinnerEndHour] = useState({});
   const [bfICR, setBfICR] = useState("");
   const [lhICR, setLhICR] = useState("");
   const [dnICR, setDnICR] = useState("");
   const [crr, setCRR] = useState("");
+
+  const [selectedMeal, setSelectedMeal] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+
+  const [visibleBFS, setVisibleBFS] = useState(false);
+  const [visibleBFE, setVisibleBFE] = useState(false);
+
+  const [visibleLHS, setVisibleLHS] = useState(false);
+  const [visibleLHE, setVisibleLHE] = useState(false);
+
+  const [visibleDNS, setVisibleDNS] = useState(false);
+  const [visibleDNE, setVisibleDNE] = useState(false);
+
+  const onDismiss = React.useCallback(() => {
+    setVisibleBFS(false);
+    setVisibleLHS(false);
+    setVisibleDNS(false);
+    setVisibleBFE(false);
+    setVisibleLHE(false);
+    setVisibleDNE(false);
+  }, [
+    setVisibleBFS,
+    setVisibleLHS,
+    setVisibleDNS,
+    setVisibleBFE,
+    setVisibleLHE,
+    setVisibleDNE,
+  ]);
+
+  const getMealAndTime = ({ hours, minutes }) => {
+    console.log("Confirm Meal :", selectedMeal, selectedTime, hours, minutes);
+    if (selectedMeal == "BF" && selectedTime == "start") {
+      console.log("Into BF STAR");
+      setBreakfastStartHour({ hours, minutes });
+    } else if (selectedMeal == "BF" && selectedTime == "End") {
+      setBreakfastEndHour({ hours, minutes });
+    } else if (selectedMeal == "LH" && selectedTime == "start") {
+      setLunchStartHour({ hours, minutes });
+    } else if (selectedMeal == "LH" && selectedTime == "End") {
+      setLunchEndHour({ hours, minutes });
+    } else if (selectedMeal == "DN" && selectedTime == "start") {
+      setDinnerStartHour({ hours, minutes });
+    } else if (selectedMeal == "DN" && selectedTime == "End") {
+      setDinnerEndHour({ hours, minutes });
+    }
+  };
+
+  const onConfirm = React.useCallback(
+    ({ hours, minutes }) => {
+      if (selectedMeal === "BF" && selectedTime === "start") {
+        setVisibleBFS(false);
+      } else if (selectedMeal === "BF" && selectedTime === "End") {
+        setVisibleBFE(false);
+      } else if (selectedMeal === "LH" && selectedTime === "start") {
+        setVisibleLHS(false);
+      } else if (selectedMeal === "LH" && selectedTime === "End") {
+        setVisibleLHE(false);
+      } else if (selectedMeal === "DN" && selectedTime === "start") {
+        setVisibleDNS(false);
+      } else if (selectedMeal === "DN" && selectedTime === "End") {
+        setVisibleDNE(false);
+      }
+      console.log("Yo :", selectedMeal);
+      getMealAndTime({ hours, minutes });
+
+      console.log({ hours, minutes });
+    },
+    [selectedMeal, selectedTime]
+  );
+
+  const handlePickerOpen = (e, v) => {
+    console.log("Handle Open :", e, v);
+    setSelectedMeal(e);
+    setSelectedTime(v);
+    if (e === "BF" && v === "start") {
+      setVisibleBFS(true);
+    } else if (e === "BF" && v === "End") {
+      setVisibleBFE(true);
+    } else if (e === "LH" && v === "start") {
+      setVisibleLHS(true);
+    } else if (e === "LH" && v === "End") {
+      setVisibleLHE(true);
+    } else if (e === "DN" && v === "start") {
+      setVisibleDNS(true);
+    } else if (e === "DN" && v === "End") {
+      setVisibleDNE(true);
+    }
+  };
+  console.log("Selec Meal :", selectedMeal, selectedTime);
 
   const dispatch = useDispatch();
 
@@ -114,8 +204,7 @@ const ProfileScreen = ({ navigation }) => {
         };
 
         await userDocRef.set(data, { merge: true });
-
-        console.log("Data saved successfully.");
+        console.log("Data to Deliver :", data);
         alert("Updated successfully");
         navigation.navigate("Home");
       } else {
@@ -127,33 +216,33 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
         {next ? (
           <View style={styles.formContainer}>
             <TextInput
-              placeholder="Enter Breakfast ICR"
+              label="Enter Breakfast ICR"
               value={bfICR}
               style={styles.input}
               onChangeText={(e) => setBfICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              placeholder="Enter Lunch ICR"
+              label="Enter Lunch ICR"
               value={lhICR}
               style={styles.input}
               onChangeText={(e) => setLhICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              placeholder="Enter Dinner ICR"
+              label="Enter Dinner ICR"
               value={dnICR}
               style={styles.input}
               onChangeText={(e) => setDnICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              placeholder="Enter Correction Ratio"
+              label="Enter Correction Ratio"
               value={crr}
               style={styles.input}
               onChangeText={(e) => setCRR(e)}
@@ -202,53 +291,115 @@ const ProfileScreen = ({ navigation }) => {
               onChangeText={setAge}
               keyboardType="numeric"
             />
+
             <View style={styles.hoursContainer}>
               <View style={styles.hoursRow}>
-                <TextInput
-                  label="Breakfast Start Hour"
-                  style={[styles.halfWidthInput]}
-                  value={breakfastStartHour}
-                  onChangeText={setBreakfastStartHour}
-                  keyboardType="numeric"
+                <View
+                  style={{
+                    justifyContent: "center",
+                    flex: 1,
+                    alignItems: "center",
+                  }}
+                ></View>
+                <Button
+                  onPress={() => handlePickerOpen("BF", "start")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Breakfast Start Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleBFS}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={breakfastStartHour.hours}
+                  minutes={breakfastStartHour.minutes}
+                  use24HourClock="true"
                 />
-                <TextInput
-                  label="Breakfast End Hour"
-                  style={[styles.halfWidthInput]}
-                  value={breakfastEndHour}
-                  onChangeText={setBreakfastEndHour}
-                  keyboardType="numeric"
+                <Button
+                  onPress={() => handlePickerOpen("BF", "End")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Breakfast End Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleBFE}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={breakfastEndHour.hours}
+                  minutes={breakfastEndHour.minutes}
+                  use24HourClock="true"
                 />
               </View>
               <View style={styles.hoursRow}>
-                <TextInput
-                  label="Lunch Start Hour"
-                  style={[styles.input, styles.halfWidthInput]}
-                  value={lunchStartHour}
-                  onChangeText={setLunchStartHour}
-                  keyboardType="numeric"
+                <Button
+                  onPress={() => handlePickerOpen("LH", "start")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Lunch Start Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleLHS}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={lunchStartHour.hours}
+                  minutes={lunchStartHour.minutes}
+                  use24HourClock="true"
                 />
-                <TextInput
-                  label="Lunch End Hour"
-                  style={[styles.input, styles.halfWidthInput]}
-                  value={lunchEndHour}
-                  onChangeText={setLunchEndHour}
-                  keyboardType="numeric"
+                <Button
+                  onPress={() => handlePickerOpen("LH", "End")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Lunch End Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleLHE}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={lunchEndHour.hours}
+                  minutes={lunchEndHour.minutes}
+                  use24HourClock="true"
                 />
               </View>
               <View style={styles.hoursRow}>
-                <TextInput
-                  label="Dinner Start Hour"
-                  style={[styles.input, styles.halfWidthInput]}
-                  value={dinnerStartHour}
-                  onChangeText={setDinnerStartHour}
-                  keyboardType="numeric"
+                <Button
+                  onPress={() => handlePickerOpen("DN", "start")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Dinner Start Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleDNS}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={dinnerStartHour.hours}
+                  minutes={lunchEndHour.minutes}
+                  use24HourClock="true"
                 />
-                <TextInput
-                  label="Dinner End Hour"
-                  style={[styles.input, styles.halfWidthInput]}
-                  value={dinnerEndHour}
-                  onChangeText={setDinnerEndHour}
-                  keyboardType="numeric"
+                <Button
+                  onPress={() => handlePickerOpen("DN", "End")}
+                  uppercase={false}
+                  mode="outlined"
+                  style={styles.halfWidthInput}
+                >
+                  Dinner End Hour
+                </Button>
+                <TimePickerModal
+                  visible={visibleDNE}
+                  onDismiss={onDismiss}
+                  onConfirm={onConfirm}
+                  hours={dinnerEndHour.hours}
+                  minutes={dinnerEndHour.minutes}
+                  use24HourClock="true"
                 />
               </View>
             </View>
