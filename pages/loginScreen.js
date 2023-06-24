@@ -21,7 +21,6 @@ export default function LoginScreen({ navigation }) {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        console.log("user Cre:", userCredential);
         const { uid, email } = userCredential.user;
         const user = { uid, email };
         firebase
@@ -32,12 +31,10 @@ export default function LoginScreen({ navigation }) {
           .then((doc) => {
             if (doc.exists) {
               const userData = doc.data();
-              console.log("Check if First time ?", userData);
               const isFirstTimeLogin = userData.isFirstTimeLogin || false;
 
               if (isFirstTimeLogin) {
                 const userWithNewFlag = { ...user, isFirstTimeLogin };
-                console.log("Check New Dispact :", userWithNewFlag);
                 dispatch({ type: "Login", payload: userWithNewFlag }); // Dispatch Login event after successful sign-in
 
                 // User is logging in for the first time, perform necessary actions
@@ -60,7 +57,6 @@ export default function LoginScreen({ navigation }) {
               } else {
                 const fetchUserData = async () => {
                   const user = firebase.auth().currentUser;
-                  console.log("User From FB Login :", user);
                   if (user) {
                     const userId = user.uid;
                     const userDocRef = firebase
