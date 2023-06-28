@@ -22,6 +22,8 @@ const FoodSearch = ({ navigation }) => {
   const route = useRoute();
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
+  const userProfData = useSelector((state) => state.user);
+  console.log("state Food", foodSearchData, userProfData);
 
   const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,6 +34,8 @@ const FoodSearch = ({ navigation }) => {
   useEffect(() => {
     clearSearch();
   }, []);
+
+  useEffect(() => {});
 
   useEffect(() => {
     if (foodSearchData?.foodSearch?.foods?.length > 0) {

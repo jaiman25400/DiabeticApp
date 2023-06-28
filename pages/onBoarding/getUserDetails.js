@@ -8,12 +8,13 @@ import {
   Platform,
 } from "react-native";
 import { TextInput, Button, Title, Subheading } from "react-native-paper";
-import { useDispatch } from "react-redux";
-import { firebase } from "../config";
+import { useSelector, useDispatch } from "react-redux";
+import { firebase } from "../../config";
 import { TimePickerModal } from "react-native-paper-dates";
 
-const ProfileScreen = ({ navigation }) => {
-  const [userStateData, setUserStateData] = useState({});
+const GetUserDetails = ({ navigation }) => {
+  const userState = useSelector((state) => state.user);
+
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [age, setAge] = useState("");
@@ -119,56 +120,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const user = firebase.auth().currentUser;
-
-      if (user) {
-        const userId = user.uid;
-        const userDocRef = firebase.firestore().collection("users").doc(userId);
-        const userProfRef = firebase
-          .firestore()
-          .collection("userProfile")
-          .doc(userId);
-
-        const userDoc = await userDocRef.get();
-        const userProf = await userProfRef.get();
-
-        if (userDoc.exists) {
-          const userData = userDoc.data();
-          setUserStateData(userData);
-          dispatch({
-            type: "userData",
-            payload: { userData },
-          });
-        } else {
-          console.log("User data not found.");
-        }
-
-        if (userProf.exists) {
-          const userProfData = userProf.data();
-          setWeight(userProfData.weight);
-          setHeight(userProfData.height);
-          setAge(userProfData.age);
-          setBreakfastStartHour(userProfData.breakfastStartHour);
-          setBreakfastEndHour(userProfData.breakfastEndHour);
-          setLunchStartHour(userProfData.lunchStartHour);
-          setLunchEndHour(userProfData.lunchEndHour);
-          setDinnerStartHour(userProfData.dinnerStartHour);
-          setDinnerEndHour(userProfData.dinnerEndHour);
-          setBfICR(userProfData.bfICR);
-          setLhICR(userProfData.lhICR);
-          setDnICR(userProfData.dnICR);
-          setCRR(userProfData.crr);
-        } else {
-          console.log("User profile data not found.");
-        }
-      } else {
-        console.log("No user is currently logged in.");
-      }
-    };
-    fetchUserData();
-  }, []);
+  useEffect(() => {}, []);
 
   const [next, setNext] = useState(false);
   const handleNext = () => {
@@ -204,9 +156,12 @@ const ProfileScreen = ({ navigation }) => {
         };
 
         await userDocRef.set(data, { merge: true });
-        console.log("Data to Deliver :", data);
+        dispatch({
+          type: "UpdateUserFlag",
+          payload: { ...userState, isFirstTimeLogin: false },
+        });
+        console.log("Data saved successfully.", data);
         alert("Updated successfully");
-        navigation.navigate("Home");
       } else {
         console.log("No user is currently logged in.");
       }
@@ -216,88 +171,76 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <ScrollView contentContainerStyle={[styles.container, { flexGrow: 1 }]}>
         {next ? (
           <View style={styles.formContainer}>
             <TextInput
-              label="Enter Breakfast ICR"
+              placeholder="Enter Breakfast ICR"
               value={bfICR}
               style={styles.input}
               onChangeText={(e) => setBfICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              label="Enter Lunch ICR"
+              placeholder="Enter Lunch ICR"
               value={lhICR}
               style={styles.input}
               onChangeText={(e) => setLhICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              label="Enter Dinner ICR"
+              placeholder="Enter Dinner ICR"
               value={dnICR}
               style={styles.input}
               onChangeText={(e) => setDnICR(e)}
               keyboardType="numeric"
             />
             <TextInput
-              label="Enter Correction Ratio"
+              placeholder="Enter Correction Ratio"
               value={crr}
               style={styles.input}
               onChangeText={(e) => setCRR(e)}
               keyboardType="numeric"
             />
+            <Button mode="contained" style={styles.button} onPress={handleNext}>
+              Back
+            </Button>
             <Button
               mode="contained"
               style={styles.button}
-              contentStyle={styles.buttonContent}
-              onPress={handleNext}
+              onPress={handleSubmit}
+              disabled={!bfICR || !lhICR || !dnICR || !crr}
             >
-              Back
+              Submit
             </Button>
-            <View style={styles.buttonContaier}>
-              <Button
-                mode="contained"
-                style={styles.button}
-                onPress={handleSubmit}
-                contentStyle={styles.buttonContent}
-                disabled={!bfICR || !lhICR || !dnICR || !crr}
-              >
-                Submit
-              </Button>
-            </View>
           </View>
         ) : (
           <View style={styles.formContainer}>
-            <Title
-              style={styles.title}
-            >{`${userStateData?.firstName} ${userStateData?.lastName}`}</Title>
-            <Subheading style={styles.subheading}>
-              {userStateData?.email}
-            </Subheading>
+            <Title style={styles.title}>
+              Please Fill Out Below Information First
+            </Title>
             <TextInput
-              label="Enter Weight"
-              style={styles.input}
+              placeholder="Enter Weight"
               value={weight}
-              onChangeText={setWeight}
+              style={styles.input}
+              onChangeText={(e) => setWeight(e)}
               keyboardType="numeric"
             />
             <TextInput
-              label="Enter Height"
-              style={styles.input}
+              placeholder="Enter Height"
               value={height}
-              onChangeText={setHeight}
+              style={styles.input}
+              onChangeText={(e) => setHeight(e)}
               keyboardType="numeric"
             />
             <TextInput
-              label="Enter Age"
-              style={styles.input}
+              placeholder="Enter Age"
               value={age}
-              onChangeText={setAge}
+              style={styles.input}
+              onChangeText={(e) => setAge(e)}
               keyboardType="numeric"
             />
-
             <View style={styles.hoursContainer}>
               <View style={styles.hoursRow}>
                 <View
@@ -409,11 +352,11 @@ const ProfileScreen = ({ navigation }) => {
                 />
               </View>
             </View>
+
             <Button
               mode="contained"
               style={styles.button}
               onPress={handleNext}
-              contentStyle={styles.buttonContent}
               disabled={
                 !weight ||
                 !height ||
@@ -449,17 +392,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
+    width: "100%",
+    height: 50,
     borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",
     color: "#a6e4d0",
   },
-  buttonContent: {
-    height: 50,
-    width: 340,
-  },
   buttonContaier: {
     paddingTop: 10,
+    width: "100%",
   },
   title: {
     fontSize: 24,
@@ -482,4 +424,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default GetUserDetails;

@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
+import { firebase } from "../config";
+import { useSelector } from "react-redux";
 
 const HomeScreen = ({ navigation }) => {
   const addFoodLog = (TAG) => {
@@ -8,6 +10,11 @@ const HomeScreen = ({ navigation }) => {
       tag: TAG,
     });
   };
+
+  const userStateInfo = useSelector((state) => state);
+  useEffect(() => {
+    console.log("Home Use Eff :", userStateInfo);
+  }, []);
 
   const [carbsConsumed, setCarbsConsumed] = useState(0);
   const totalCarbsGoal = 500;
@@ -40,6 +47,7 @@ const HomeScreen = ({ navigation }) => {
           mode="contained"
           style={[styles.button, styles.breakfastButton]}
           onPress={() => addFoodLog("BREAKFAST")}
+          contentStyle={styles.buttonContent}
         >
           Breakfast - 100 Carbs
         </Button>
@@ -49,6 +57,7 @@ const HomeScreen = ({ navigation }) => {
           mode="contained"
           style={[styles.button, styles.lunchButton]}
           onPress={() => handleButtonPress(150)}
+          contentStyle={styles.buttonContent}
         >
           Lunch - 150 Carbs
         </Button>
@@ -58,6 +67,7 @@ const HomeScreen = ({ navigation }) => {
           mode="contained"
           style={[styles.button, styles.dinnerButton]}
           onPress={() => handleButtonPress(200)}
+          contentStyle={styles.buttonContent}
         >
           Dinner - 200 Carbs
         </Button>
@@ -67,6 +77,7 @@ const HomeScreen = ({ navigation }) => {
           mode="contained"
           style={[styles.button, styles.snackButton]}
           onPress={() => handleButtonPress(50)}
+          contentStyle={styles.buttonContent}
         >
           Snack - 50 Carbs
         </Button>
@@ -114,18 +125,18 @@ const styles = StyleSheet.create({
     color: "black",
   },
   buttonContainer: {
-    width: "100%",
-    height: "10%",
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 10,
   },
   button: {
     flex: 1,
-    width: "100%",
-    height: "100%",
     marginHorizontal: 8,
     justifyContent: "center",
+  },
+  buttonContent: {
+    height: 65,
+    width: 340,
   },
   breakfastButton: {
     backgroundColor: "#008b8b",
