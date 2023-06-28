@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Button, Card, Title, Paragraph, IconButton } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import {
+  Text,
+  Button,
+  Card,
+  Title,
+  Paragraph,
+  IconButton,
+} from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
 
@@ -10,7 +17,7 @@ const AddFood = () => {
   const user = useSelector((state) => state.user);
   const [foodDetails, setFoodDetails] = useState(null);
   const [servingCount, setServingCount] = useState(1);
-  const [insulRatio, setInsulinRatio] = useState(null);
+  const [totalCarbs, setTotalCarbs] = useState(null);
 
   useEffect(() => {
     console.log(foodItem);
@@ -32,24 +39,12 @@ const AddFood = () => {
     }
   };
 
-  const calculateInsulinRatio = (item, count) => {
-    const insulinToCarb = 10;
-    let carbs = 0;
-    item?.foodNutrients?.map((item) => {
-      if (item?.number == 205) {
-        carbs = item?.amount;
-      }
-    });
-    const totalCarbs = carbs * count;
-    return totalCarbs / insulinToCarb;
-  };
-
-  const handleSaveFood = (item, count) => {
+  const addFood = (item, count) => {
     console.log("savedFood:", item, count);
     console.log("user", user);
-    const insulinIntake = calculateInsulinRatio(item, count);
-    setInsulinRatio(insulinIntake ? insulinIntake : null);
   };
+
+  const saveFood = () => {};
 
   return (
     <View style={styles.container}>
@@ -60,41 +55,47 @@ const AddFood = () => {
             {foodDetails?.foodNutrients?.map((item) => {
               return (
                 <View key={item?.number}>
-                  <Paragraph>Type: {item.name}</Paragraph>
+                  <Paragraph>Nutrient: {item.name}</Paragraph>
                   <Paragraph>
-                    Nutrient: {item.amount}
+                    Amount: {item.amount}
                     {item.unitName}
                   </Paragraph>
                 </View>
               );
             })}
-
+            <View style={styles.servingContainer}>
+              <Text variant="titleMedium">Number of Servings: </Text>
+              <IconButton
+                icon="minus-circle-outline"
+                size={30}
+                onPress={decrementServingCount}
+              />
+              <Text style={styles.servingText}>{servingCount}</Text>
+              <IconButton
+                icon="plus-circle-outline"
+                size={30}
+                onPress={incrementServingCount}
+              />
+            </View>
             {/* Display other required information here */}
           </Card.Content>
           <Card.Actions>
-            <IconButton
-              icon="minus"
-              size={20}
-              onPress={decrementServingCount}
-            />
-            <Text style={styles.servingText}>{servingCount}</Text>
-            <IconButton icon="plus" size={20} onPress={incrementServingCount} />
+            {totalCarbs > 0 ? <Text>Total Carbs : {totalCarbs}</Text> : null}
             <Button
               mode="contained"
-              onPress={() => handleSaveFood(foodDetails, servingCount)}
+              onPress={() => addFood(foodDetails, servingCount)}
             >
               Add Food
             </Button>
           </Card.Actions>
-          {insulRatio ? (
-            <Card.Content style={styles.totalCarbsContainer}>
-              <Text style={styles.totalCarbsText}>
-                Estimated Insulin Units : {insulRatio?.toFixed(2)} units
-              </Text>
-            </Card.Content>
-          ) : null}
         </Card>
       ) : null}
+      <Button
+        mode="contained"
+        onPress={() => SaveFood(foodDetails, servingCount)}
+      >
+        Save Food
+      </Button>
     </View>
   );
 };
@@ -119,15 +120,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 8,
   },
-  totalCarbsContainer: {
-    marginTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-    paddingTop: 8,
-    alignItems: "center",
-  },
-  totalCarbsText: {
-    fontSize: 16,
-    fontWeight: "bold",
+  servingContainer: {
+    paddingTop: 20,
+    flexDirection: "row",
   },
 });
