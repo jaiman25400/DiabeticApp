@@ -248,7 +248,12 @@ const ProfileScreen = ({ navigation }) => {
               onChangeText={(e) => setCRR(e)}
               keyboardType="numeric"
             />
-            <Button mode="contained" style={styles.button} onPress={handleNext}>
+            <Button
+              mode="contained"
+              style={styles.button}
+              contentStyle={styles.buttonContent}
+              onPress={handleNext}
+            >
               Back
             </Button>
             <View style={styles.buttonContaier}>
@@ -256,6 +261,7 @@ const ProfileScreen = ({ navigation }) => {
                 mode="contained"
                 style={styles.button}
                 onPress={handleSubmit}
+                contentStyle={styles.buttonContent}
                 disabled={!bfICR || !lhICR || !dnICR || !crr}
               >
                 Submit
@@ -407,6 +413,7 @@ const ProfileScreen = ({ navigation }) => {
               mode="contained"
               style={styles.button}
               onPress={handleNext}
+              contentStyle={styles.buttonContent}
               disabled={
                 !weight ||
                 !height ||
@@ -442,16 +449,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    width: "100%",
-    height: 50,
     borderRadius: 6,
     justifyContent: "center",
     alignItems: "center",
     color: "#a6e4d0",
   },
+  buttonContent: {
+    height: 50,
+    width: 340,
+  },
   buttonContaier: {
     paddingTop: 10,
-    width: "100%",
   },
   title: {
     fontSize: 24,
