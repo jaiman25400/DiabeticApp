@@ -1,6 +1,4 @@
 export function cleanSearchData(data) {
-  console.log("response", data);
-
   //Function to find carb from Nutrients Array
   function getFoodCarb(nutri) {
     if (nutri?.length > 0) {
@@ -49,6 +47,5 @@ export function cleanSearchData(data) {
     foods: getFoodList,
   };
 
-  console.log("foodList:", foodList);
   return foodList;
 }
