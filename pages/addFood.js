@@ -92,7 +92,7 @@ const AddFood = () => {
       ) : null}
       <Button
         mode="contained"
-        onPress={() => SaveFood(foodDetails, servingCount)}
+        onPress={() => saveFood(foodDetails, servingCount)}
       >
         Save Food
       </Button>
