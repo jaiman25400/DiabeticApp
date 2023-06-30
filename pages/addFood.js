@@ -11,6 +11,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
 import * as actionTypes from "../redux/actions/actionTypes";
+import axios from "axios";
 
 const AddFood = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -73,15 +74,23 @@ const AddFood = ({ navigation }) => {
     }
   };
 
-  const saveFood = () => {
+  const saveFood = async () => {
     let totalCarbs = calculateCarbs(addFoodItem.foodItems);
     let params = {
-      user: user?.user,
-      FoodItem: addFoodItem.foodItems,
-      tatalCarbs: totalCarbs,
-      foodType: 1,
+      userId: user?.user?.uid,
+      mealItems: addFoodItem.foodItems,
+      totalCarbs: totalCarbs,
+      mealType: "Breakfast",
     };
-    console.log("params", params);
+    console.log("params :: ", params);
+    await axios
+      .post("http://127.0.0.1:3000/api/submitData", params)
+      .then(() => {
+        console.log("Data submitted successfully.");
+      })
+      .catch((e) => {
+        console.log("Error : ", e);
+      });
   };
 
   return (
