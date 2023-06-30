@@ -10,14 +10,18 @@ import {
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
+import * as actionTypes from "../redux/actions/actionTypes";
 
-const AddFood = () => {
+const AddFood = ({ navigation }) => {
   const dispatch = useDispatch();
   const foodItem = useSelector((state) => state.api);
   const user = useSelector((state) => state.user);
+  const addFoodItem = useSelector((state) => state.addFood);
   const [foodDetails, setFoodDetails] = useState(null);
   const [servingCount, setServingCount] = useState(1);
   const [totalCarbs, setTotalCarbs] = useState(null);
+
+  console.log("addFoodItem", addFoodItem);
 
   useEffect(() => {
     console.log(foodItem);
@@ -39,12 +43,46 @@ const AddFood = () => {
     }
   };
 
-  const addFood = (item, count) => {
-    console.log("savedFood:", item, count);
-    console.log("user", user);
+  const calculateCarbs = (items) => {
+    let totalCarbs = 0;
+    if (items.length > 0) {
+      items.map((x) => {
+        let carbs = x.foodNutrients.find((y) => {
+          return y.number == 205;
+        });
+        let itemCarbs = carbs.amount * x.count;
+        totalCarbs = totalCarbs + itemCarbs;
+      });
+    }
+    return totalCarbs;
   };
 
-  const saveFood = () => {};
+  const addFood = (item, count) => {
+    let allItems = addFoodItem.foodItems ? addFoodItem.foodItems : [];
+    let check = allItems?.find((x) => x.fdcId == item.fdcId);
+    if (!check) {
+      let params = [
+        ...allItems,
+        {
+          ...item,
+          count: count,
+        },
+      ];
+      dispatch(actionTypes.AddFoodItem(params));
+      navigation.goBack();
+    }
+  };
+
+  const saveFood = () => {
+    let totalCarbs = calculateCarbs(addFoodItem.foodItems);
+    let params = {
+      user: user?.user,
+      FoodItem: addFoodItem.foodItems,
+      tatalCarbs: totalCarbs,
+      foodType: 1,
+    };
+    console.log("params", params);
+  };
 
   return (
     <View style={styles.container}>
@@ -90,10 +128,7 @@ const AddFood = () => {
           </Card.Actions>
         </Card>
       ) : null}
-      <Button
-        mode="contained"
-        onPress={() => saveFood(foodDetails, servingCount)}
-      >
+      <Button mode="contained" onPress={() => saveFood()}>
         Save Food
       </Button>
     </View>

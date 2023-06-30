@@ -3,11 +3,12 @@ import { combineReducers } from "redux";
 
 import userStateReducer from "./reducers/userStateReducer";
 import apiRequest from "./reducers/apiReducer";
+import addFoodReducer from "./reducers/addFood";
 
 const rootReducer = combineReducers({
   user: userStateReducer,
   api: apiRequest,
-  //slice2: reducer2,
+  addFood: addFoodReducer,
 });
 
 const store = configureStore({ reducer: rootReducer });

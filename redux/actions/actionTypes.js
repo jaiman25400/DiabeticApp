@@ -36,6 +36,16 @@ const clearFoodItem = () => ({
   type: TYPES.CLEAR_FOOD_ITEM,
 });
 
+const AddFoodItem = (data) => ({
+  type: TYPES.ADD_FOOD_ITEMS,
+  payload: data,
+});
+
+const RemoveFoodItem = (data) => ({
+  type: TYPES.REMOVE_FOOD_ITEMS,
+  payload: data,
+});
+
 export {
   //fetch Food search
   fetchFoodSearch,
@@ -48,4 +58,8 @@ export {
   fetchFoodItemSuccess,
   fetchFoodItemFailure,
   clearFoodItem,
+
+  //Add Food Items
+  AddFoodItem,
+  RemoveFoodItem,
 };
