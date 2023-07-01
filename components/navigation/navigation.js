@@ -33,7 +33,6 @@ export default function NavigationStack() {
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
-    console.log("Navi Eff :", userState);
     return unsubscribe;
   }, [userState]);
 

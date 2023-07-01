@@ -9,6 +9,7 @@ import {
   useTheme,
   Text,
   Divider,
+  FAB,
 } from "react-native-paper";
 import {
   fetchFoodSearchAPI,
@@ -22,8 +23,6 @@ const FoodSearch = ({ navigation }) => {
   const route = useRoute();
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
-  const userProfData = useSelector((state) => state.user);
-  console.log("state Food", foodSearchData, userProfData);
 
   const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,7 +97,7 @@ const FoodSearch = ({ navigation }) => {
   const onFoodItem = (item) => {
     const params = {
       format: "abridged",
-      nutrients: 205,
+      nutrients: "208,204,205,262,203,291,301,302,303,304,305,306,307,601,",
     };
     dispatch(fetchFoodItemByIdAPI(params, item?.fdcId, "BREAKFAST"));
   };
@@ -122,6 +121,10 @@ const FoodSearch = ({ navigation }) => {
         </Text>
       </View>
     );
+  };
+
+  const onCartPress = () => {
+    navigation.navigate("FoodCart");
   };
 
   return (
@@ -198,6 +201,7 @@ const FoodSearch = ({ navigation }) => {
           />
         </View>
       ) : null}
+      <FAB style={styles.fab} icon="cart" onPress={onCartPress} />
     </View>
   );
 };
@@ -235,5 +239,12 @@ const styles = StyleSheet.create({
   },
   pageNumerStyle: {
     paddingTop: 30,
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    flex: 1,
   },
 });
