@@ -23,7 +23,6 @@ const FoodSearch = ({ navigation }) => {
   const route = useRoute();
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
-  const userProfData = useSelector((state) => state.user);
 
   const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,7 +97,7 @@ const FoodSearch = ({ navigation }) => {
   const onFoodItem = (item) => {
     const params = {
       format: "abridged",
-      nutrients: 205,
+      nutrients: "208,204,205,262,203,291,301,302,303,304,305,306,307,601,",
     };
     dispatch(fetchFoodItemByIdAPI(params, item?.fdcId, "BREAKFAST"));
   };
@@ -124,15 +123,12 @@ const FoodSearch = ({ navigation }) => {
     );
   };
 
+  const onCartPress = () => {
+    navigation.navigate("FoodCart");
+  };
+
   return (
     <View style={styles.container(theme)}>
-      <FAB
-        style={styles.fab}
-        icon="cart"
-        onPress={() => {
-          // Handle cart button press
-        }}
-      />
       <Searchbar
         placeholder="Search Food Item"
         onChangeText={onChangeSearch}
@@ -205,6 +201,7 @@ const FoodSearch = ({ navigation }) => {
           />
         </View>
       ) : null}
+      <FAB style={styles.fab} icon="cart" onPress={onCartPress} />
     </View>
   );
 };
@@ -248,5 +245,6 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+    flex: 1,
   },
 });

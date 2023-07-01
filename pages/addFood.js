@@ -11,50 +11,45 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
 import * as actionTypes from "../redux/actions/actionTypes";
-import axios from "axios";
+import AddCarbsModal from "../ui/addCarbsModel";
 
 const AddFood = ({ navigation }) => {
   const dispatch = useDispatch();
   const foodItem = useSelector((state) => state.api);
   const user = useSelector((state) => state.user);
   const addFoodItem = useSelector((state) => state.addFood);
+  const [modalVisible, setModalVisible] = useState(false);
   const [foodDetails, setFoodDetails] = useState(null);
   const [servingCount, setServingCount] = useState(1);
-  const [totalCarbs, setTotalCarbs] = useState(null);
-
-  console.log("addFoodItem", addFoodItem);
+  const [carbs, setCarbs] = useState(0);
+  const [totalCarbs, setTotalCarbs] = useState(0);
+  const [carbUnit, setCarbUnit] = useState("");
 
   useEffect(() => {
     if (foodItem) {
       setFoodDetails(foodItem.foodItem);
       dispatch(clearFoodItemResults());
+      let carbs = foodItem.foodItem?.foodNutrients?.find(
+        (x) => x.number == 205
+      );
+      setCarbs(carbs.amount.toFixed(2));
+      setTotalCarbs(carbs.amount.toFixed(2));
+      setCarbUnit(carbs.unitName);
     }
   }, []);
 
   // Function to handle incrementing the serving count
   const incrementServingCount = () => {
+    setTotalCarbs(carbs * (servingCount + 1).toFixed(2));
     setServingCount(servingCount + 1);
   };
 
   // Function to handle decrementing the serving count
   const decrementServingCount = () => {
     if (servingCount > 1) {
+      setTotalCarbs((carbs * (servingCount - 1)).toFixed(2));
       setServingCount(servingCount - 1);
     }
-  };
-
-  const calculateCarbs = (items) => {
-    let totalCarbs = 0;
-    if (items.length > 0) {
-      items.map((x) => {
-        let carbs = x.foodNutrients.find((y) => {
-          return y.number == 205;
-        });
-        let itemCarbs = carbs.amount * x.count;
-        totalCarbs = totalCarbs + itemCarbs;
-      });
-    }
-    return totalCarbs;
   };
 
   const addFood = (item, count) => {
@@ -73,23 +68,22 @@ const AddFood = ({ navigation }) => {
     }
   };
 
-  const saveFood = async () => {
-    let totalCarbs = calculateCarbs(addFoodItem.foodItems);
-    let params = {
-      userId: user?.user?.uid,
-      mealItems: addFoodItem.foodItems,
-      totalCarbs: totalCarbs,
-      mealType: "Breakfast",
-    };
-    console.log("params :: ", params);
-    await axios
-      .post("http://127.0.0.1:3000/api/submitData", params)
-      .then(() => {
-        console.log("Data submitted successfully.");
-      })
-      .catch((e) => {
-        console.log("Error : ", e);
-      });
+  const handleSaveCarbs = (carbs) => {
+    setModalVisible(false);
+    let currentData = foodDetails?.foodNutrients?.find((x) => {
+      return x.number == 205;
+    });
+    let newData = { ...currentData, amount: Number(carbs) };
+    let newArray = [];
+    newArray = foodDetails?.foodNutrients.map((item) => {
+      if (item.number == 205) {
+        return newData;
+      } else {
+        return item;
+      }
+    });
+    let newFoodDetails = { ...foodDetails, foodNutrients: newArray };
+    addFood(newFoodDetails, 1);
   };
 
   return (
@@ -101,9 +95,8 @@ const AddFood = ({ navigation }) => {
             {foodDetails?.foodNutrients?.map((item) => {
               return (
                 <View key={item?.number}>
-                  <Paragraph>Nutrient: {item.name}</Paragraph>
                   <Paragraph>
-                    Amount: {item.amount}
+                    {item.name} : {item.amount}
                     {item.unitName}
                   </Paragraph>
                 </View>
@@ -123,22 +116,31 @@ const AddFood = ({ navigation }) => {
                 onPress={incrementServingCount}
               />
             </View>
-            {/* Display other required information here */}
+            <View style={styles.servingContainer}>
+              <Text variant="titleMedium">Total Carbs: </Text>
+              <Text style={styles.servingText}>
+                {totalCarbs} {carbUnit}
+              </Text>
+            </View>
+            <Button onPress={() => setModalVisible(true)}>
+              Add Carbs Manually?
+            </Button>
           </Card.Content>
           <Card.Actions>
-            {totalCarbs > 0 ? <Text>Total Carbs : {totalCarbs}</Text> : null}
             <Button
               mode="contained"
               onPress={() => addFood(foodDetails, servingCount)}
             >
-              Add Food
+              Add To Cart
             </Button>
           </Card.Actions>
         </Card>
       ) : null}
-      <Button mode="contained" onPress={() => saveFood()}>
-        Save Food
-      </Button>
+      <AddCarbsModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onSave={handleSaveCarbs}
+      />
     </View>
   );
 };
@@ -166,5 +168,6 @@ const styles = StyleSheet.create({
   servingContainer: {
     paddingTop: 20,
     flexDirection: "row",
+    alignItems: "center",
   },
 });
