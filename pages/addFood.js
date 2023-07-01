@@ -10,14 +10,19 @@ import {
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
+import * as actionTypes from "../redux/actions/actionTypes";
+import axios from "axios";
 
-const AddFood = () => {
+const AddFood = ({ navigation }) => {
   const dispatch = useDispatch();
   const foodItem = useSelector((state) => state.api);
   const user = useSelector((state) => state.user);
+  const addFoodItem = useSelector((state) => state.addFood);
   const [foodDetails, setFoodDetails] = useState(null);
   const [servingCount, setServingCount] = useState(1);
   const [totalCarbs, setTotalCarbs] = useState(null);
+
+  console.log("addFoodItem", addFoodItem);
 
   useEffect(() => {
     if (foodItem) {
@@ -38,12 +43,54 @@ const AddFood = () => {
     }
   };
 
-  const addFood = (item, count) => {
-    console.log("savedFood:", item, count);
-    console.log("user", user);
+  const calculateCarbs = (items) => {
+    let totalCarbs = 0;
+    if (items.length > 0) {
+      items.map((x) => {
+        let carbs = x.foodNutrients.find((y) => {
+          return y.number == 205;
+        });
+        let itemCarbs = carbs.amount * x.count;
+        totalCarbs = totalCarbs + itemCarbs;
+      });
+    }
+    return totalCarbs;
   };
 
-  const saveFood = () => {};
+  const addFood = (item, count) => {
+    let allItems = addFoodItem.foodItems ? addFoodItem.foodItems : [];
+    let check = allItems?.find((x) => x.fdcId == item.fdcId);
+    if (!check) {
+      let params = [
+        ...allItems,
+        {
+          ...item,
+          count: count,
+        },
+      ];
+      dispatch(actionTypes.AddFoodItem(params));
+      navigation.goBack();
+    }
+  };
+
+  const saveFood = async () => {
+    let totalCarbs = calculateCarbs(addFoodItem.foodItems);
+    let params = {
+      userId: user?.user?.uid,
+      mealItems: addFoodItem.foodItems,
+      totalCarbs: totalCarbs,
+      mealType: "Breakfast",
+    };
+    console.log("params :: ", params);
+    await axios
+      .post("http://127.0.0.1:3000/api/submitData", params)
+      .then(() => {
+        console.log("Data submitted successfully.");
+      })
+      .catch((e) => {
+        console.log("Error : ", e);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -89,10 +136,7 @@ const AddFood = () => {
           </Card.Actions>
         </Card>
       ) : null}
-      <Button
-        mode="contained"
-        onPress={() => saveFood(foodDetails, servingCount)}
-      >
+      <Button mode="contained" onPress={() => saveFood()}>
         Save Food
       </Button>
     </View>
