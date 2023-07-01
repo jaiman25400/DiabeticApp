@@ -20,7 +20,6 @@ const AddFood = () => {
   const [totalCarbs, setTotalCarbs] = useState(null);
 
   useEffect(() => {
-    console.log(foodItem);
     if (foodItem) {
       setFoodDetails(foodItem.foodItem);
       dispatch(clearFoodItemResults());

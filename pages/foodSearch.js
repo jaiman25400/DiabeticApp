@@ -9,6 +9,7 @@ import {
   useTheme,
   Text,
   Divider,
+  FAB,
 } from "react-native-paper";
 import {
   fetchFoodSearchAPI,
@@ -23,7 +24,6 @@ const FoodSearch = ({ navigation }) => {
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
   const userProfData = useSelector((state) => state.user);
-  console.log("state Food", foodSearchData, userProfData);
 
   const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,6 +126,13 @@ const FoodSearch = ({ navigation }) => {
 
   return (
     <View style={styles.container(theme)}>
+      <FAB
+        style={styles.fab}
+        icon="cart"
+        onPress={() => {
+          // Handle cart button press
+        }}
+      />
       <Searchbar
         placeholder="Search Food Item"
         onChangeText={onChangeSearch}
@@ -235,5 +242,11 @@ const styles = StyleSheet.create({
   },
   pageNumerStyle: {
     paddingTop: 30,
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });
