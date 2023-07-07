@@ -6,9 +6,12 @@ import { useSelector } from "react-redux";
 
 const HomeScreen = ({ navigation }) => {
   const addFoodLog = (TAG) => {
-    navigation.navigate("FoodSearch", {
+    navigation.navigate("ViewFoodItem", {
       tag: TAG,
     });
+    // navigation.navigate("FoodSearch", {
+    //   tag: TAG,
+    // });
   };
 
   const userStateInfo = useSelector((state) => state);

@@ -4,6 +4,7 @@ import { Text, Button, List, Divider } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { calculateCarbs } from "../utils/nutritionCalculation";
 import axios from "axios";
+import { useEffect } from "react";
 
 const FoodCart = ({ navigation }) => {
   const user = useSelector((state) => state.user);
