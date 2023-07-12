@@ -15,6 +15,7 @@ import signupScreen from "../../pages/signupScreen";
 import { useSelector } from "react-redux";
 import UserOnboardingScreen from "../../pages/onBoarding/userInfo";
 import ProfileScreen from "../../pages/profileScreen";
+import HistoryScreen from "../../pages/historyScreen";
 import HomeNavigation from "./homeNavigation";
 import GetUserDetails from "../../pages/onBoarding/getUserDetails";
 
@@ -80,6 +81,7 @@ export default function NavigationStack() {
                     headerTitle: (props) => <HeaderLogo {...props} />,
                   }}
                 />
+                <Drawer.Screen name="History" component={HistoryScreen} />
                 <Drawer.Screen name="Profile" component={ProfileScreen} />
               </Drawer.Navigator>
             )}

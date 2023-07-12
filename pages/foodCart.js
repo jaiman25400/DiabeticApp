@@ -17,8 +17,10 @@ const FoodCart = ({ navigation }) => {
       totalCarbs: totalCarbs,
       mealType: "Breakfast",
     };
+    //https://diabeticapp-backend.onrender.com
+    //http://127.0.0.1:3000
     await axios
-      .post("http://127.0.0.1:3000/api/submitData", params)
+      .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
       .then(() => {
         console.log("Data submitted successfully.");
       })
