@@ -22,6 +22,7 @@ const FoodSearch = ({ navigation, route }) => {
   const { tag } = route?.params;
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
+  const [searchFlag, setSearchFlag] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(null);
@@ -47,7 +48,7 @@ const FoodSearch = ({ navigation, route }) => {
     if (currentPage > 0) {
       getSearchResult(currentPage);
     }
-  }, [currentPage]);
+  }, [searchFlag]);
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
@@ -59,17 +60,20 @@ const FoodSearch = ({ navigation, route }) => {
     setTotalPages(null);
     setData([]);
     setCurrentPage(1);
+    setSearchFlag(!searchFlag);
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
+      setSearchFlag(!searchFlag);
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+      setSearchFlag(!searchFlag);
     }
   };
 
