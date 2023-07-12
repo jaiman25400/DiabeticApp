@@ -17,7 +17,6 @@ import ProfileScreen from "../../pages/profileScreen";
 import HistoryScreen from "../../pages/historyScreen";
 import HomeNavigation from "./homeNavigation";
 import GetUserDetails from "../../pages/onBoarding/getUserDetails";
-import HistoryScreen from "../../pages/historyScreen";
 
 const Drawer = createDrawerNavigator();
 

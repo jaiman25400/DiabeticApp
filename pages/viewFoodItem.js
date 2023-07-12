@@ -20,7 +20,7 @@ const ViewFoodItem = ({ navigation, route }) => {
     };
     await axios
       .get(
-        `http://127.0.0.1:3000/api/getDataByMealType/Date?userId=${params.userId}&mealType=${params.mealType}`
+        `https://diabeticapp-backend.onrender.com/api/getDataByMealType/Date?userId=${params.userId}&mealType=${params.mealType}`
       )
       .then((res) => {
         setFoodItems(res?.data ? res?.data?.mealItems : []);

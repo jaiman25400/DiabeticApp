@@ -13,7 +13,7 @@ const HistoryScreen = () => {
     console.log("User Id ::", user);
     const fetchUserDates = async () => {
       axios
-        .get("http://127.0.0.1:3000/api/userDates", {
+        .get("https://diabeticapp-backend.onrender.com/api/userDates", {
           params: {
             userId: user?.user?.uid,
           },
@@ -33,7 +33,7 @@ const HistoryScreen = () => {
     setSelectedDay(day);
     console.log("Day ::", day);
     axios
-      .get("http://127.0.0.1:3000/api/getDataByDate", {
+      .get("https://diabeticapp-backend.onrender.com/api/getDataByDate", {
         params: {
           userId: user?.user?.uid,
           mealDate: day,
