@@ -84,7 +84,7 @@ const FoodCart = ({ navigation, route }) => {
 
         <View style={styles.totalContainer}>
           <Text style={styles.totalText}>
-            Total Carbs: {totalCarbs ? totalCarbs : 0} g
+            Total Carbs: {totalCarbs ? totalCarbs?.toFixed(2) : 0} g
           </Text>
           <Button onPress={onSave} mode="contained" style={styles.saveButton}>
             Save

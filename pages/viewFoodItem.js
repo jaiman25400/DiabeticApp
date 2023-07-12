@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Button, List } from "react-native-paper";
+import { Button, Divider, List, Text } from "react-native-paper";
 
 const ViewFoodItem = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
   const { tag } = route?.params;
   const [foodItems, setFoodItems] = useState([]);
+  const [totalCarbs, setTotalCarbs] = useState("");
 
   const getFoodItems = async () => {
     let params = {
@@ -23,6 +24,7 @@ const ViewFoodItem = ({ navigation, route }) => {
       )
       .then((res) => {
         setFoodItems(res?.data ? res?.data?.mealItems : []);
+        setTotalCarbs(res?.data ? res?.data?.totalCarbs : "");
         console.log("Data:", res, res?.data ? res?.data?.mealItems : []);
       })
       .catch((e) => {
@@ -62,7 +64,7 @@ const ViewFoodItem = ({ navigation, route }) => {
         <List.Section style={styles.listSection}>
           <List.Subheader>
             {" "}
-            <Text style={styles.message}>My Food Items</Text>
+            <Text style={styles.message}>Today's {tag}</Text>
           </List.Subheader>
           {foodItems?.map((item, index) => (
             <List.Item
@@ -81,7 +83,20 @@ const ViewFoodItem = ({ navigation, route }) => {
           </Button>
         </View>
       )}
-      <Button style={styles.buttonStyle} onPress={onAddFood}>
+      <Divider />
+      {foodItems ? (
+        <View style={styles.view}>
+          <Text variant="titleMedium">
+            Total Carbs Consumed - {totalCarbs} g
+          </Text>
+        </View>
+      ) : null}
+      <Button
+        mode="contained"
+        disabled
+        style={styles.buttonStyle}
+        onPress={onAddFood}
+      >
         Add Food
       </Button>
     </View>
@@ -112,7 +127,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonStyle: {
-    flex: 1,
-    justifyContent: "flex-end",
+    position: "absolute",
+    bottom: 16,
+    left: 8,
+    right: 8,
+    padding: 16,
+  },
+  view: {
+    padding: 16,
   },
 });
