@@ -66,8 +66,8 @@ const HistoryScreen = () => {
       {selectedDay &&
         userMealData.map(function (data, i) {
           return (
-            <View key={data._id}>
-              <Text>
+            <View style={styles.chartContainer} key={data._id}>
+              <Text style={styles.selectedDayText}>
                 {data?.mealType} : {data?.totalCarbs}
               </Text>
             </View>
