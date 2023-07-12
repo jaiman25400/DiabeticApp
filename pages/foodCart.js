@@ -13,7 +13,9 @@ const FoodCart = ({ navigation }) => {
 
   const onSave = async () => {
     let params = {
-      userId: user?.user?.uid,
+      userId: user?.user?.uid
+        ? user?.user?.uid
+        : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
       mealType: "Breakfast",
@@ -22,6 +24,7 @@ const FoodCart = ({ navigation }) => {
       .post("http://127.0.0.1:3000/api/submitData", params)
       .then(() => {
         console.log("Data submitted successfully.");
+        navigation.navigation("homeScreen");
       })
       .catch((e) => {
         console.log("Error : ", e);
