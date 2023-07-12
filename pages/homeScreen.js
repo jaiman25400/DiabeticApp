@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { Button, Card, Divider, Subheading, Text } from "react-native-paper";
 import { firebase } from "../config";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [totalCarbs, setTotalCarbs] = useState([]);
 
   const addFoodLog = (tag) => {
     navigation.navigate("ViewFoodItem", {
@@ -13,10 +15,27 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
+  const getCarbsDetails = async (user) => {
+    let params = {
+      userId: user ? user : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
+    };
+    await axios
+      .get(
+        `http://127.0.0.1:3000/api/homeScreenCarbDetails?userId=${params.userId}`
+      )
+      .then((res) => {
+        console.log("Data:", res);
+        setTotalCarbs(res.data?.length > 0 ? res?.data : []);
+      })
+      .catch((e) => {
+        console.log("Error : ", e);
+      });
+  };
+
   const userStateInfo = useSelector((state) => state);
   useEffect(() => {
+    const user = firebase.auth().currentUser;
     const fetchUserData = async () => {
-      const user = firebase.auth().currentUser;
       if (user) {
         const uid = user.uid;
         console.log("UIDD :", uid);
@@ -53,6 +72,7 @@ const HomeScreen = ({ navigation }) => {
     };
 
     fetchUserData();
+    getCarbsDetails(user?.uid);
   }, []);
 
   console.log("HomeScreen :", userStateInfo);
@@ -65,6 +85,11 @@ const HomeScreen = ({ navigation }) => {
 
   const calculateCycleProgress = () => {
     return (carbsConsumed / totalCarbsGoal) * 30;
+  };
+
+  const getTotalCarbs = (tag) => {
+    let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
+    return carbs ? `  (Carbs - ${carbs}g)` : null;
   };
 
   return (
@@ -90,6 +115,7 @@ const HomeScreen = ({ navigation }) => {
           contentStyle={styles.buttonContent}
         >
           Breakfast
+          {getTotalCarbs("Breakfast")}
         </Button>
       </View>
       <View style={styles.buttonContainer}>
@@ -100,6 +126,7 @@ const HomeScreen = ({ navigation }) => {
           contentStyle={styles.buttonContent}
         >
           Lunch
+          {getTotalCarbs("Lunch")}
         </Button>
       </View>
       <View style={styles.buttonContainer}>
@@ -110,6 +137,7 @@ const HomeScreen = ({ navigation }) => {
           contentStyle={styles.buttonContent}
         >
           Dinner
+          {getTotalCarbs("Dinner")}
         </Button>
       </View>
       {/* <View style={styles.buttonContainer}>
@@ -172,7 +200,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 8,
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   buttonContent: {
     height: 65,
@@ -189,6 +217,13 @@ const styles = StyleSheet.create({
   },
   snackButton: {
     backgroundColor: "#6a5acd",
+  },
+  sectionTitle: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  card: {
+    marginBottom: 16,
   },
 });
 

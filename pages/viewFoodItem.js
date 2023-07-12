@@ -84,7 +84,7 @@ const ViewFoodItem = ({ navigation, route }) => {
         </View>
       )}
       <Divider />
-      {foodItems ? (
+      {foodItems?.length > 0 ? (
         <View style={styles.view}>
           <Text variant="titleMedium">
             Total Carbs Consumed - {totalCarbs} g
