@@ -11,3 +11,9 @@ export const calculateCarbs = (items) => {
   }
   return totalCarbs;
 };
+
+export const getInsultinDose = (totalCarbs, ratio) => {
+  const dose = totalCarbs / ratio;
+  const roundedDose = Math.round(dose * 2) / 2;
+  return roundedDose;
+};

@@ -10,6 +10,7 @@ const ViewFoodItem = ({ navigation, route }) => {
   const { tag } = route?.params;
   const [foodItems, setFoodItems] = useState([]);
   const [totalCarbs, setTotalCarbs] = useState("");
+  const [insulinDose, setInsulinDose] = useState(0);
 
   const getFoodItems = async () => {
     let params = {
@@ -25,6 +26,7 @@ const ViewFoodItem = ({ navigation, route }) => {
       .then((res) => {
         setFoodItems(res?.data ? res?.data?.mealItems : []);
         setTotalCarbs(res?.data ? res?.data?.totalCarbs : "");
+        setInsulinDose(res?.data ? res?.data?.insulinDose : 0);
         console.log("Data:", res, res?.data ? res?.data?.mealItems : []);
       })
       .catch((e) => {
@@ -84,11 +86,16 @@ const ViewFoodItem = ({ navigation, route }) => {
         </View>
       )}
       <Divider />
-      {foodItems ? (
+      {foodItems?.length > 0 ? (
         <View style={styles.view}>
           <Text variant="titleMedium">
             Total Carbs Consumed - {totalCarbs} g
           </Text>
+          {insulinDose > 0 ? (
+            <Text variant="titleMedium">
+              Total Insulin Dose - {insulinDose} g
+            </Text>
+          ) : null}
         </View>
       ) : null}
       <Button
