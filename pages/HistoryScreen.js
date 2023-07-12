@@ -8,7 +8,7 @@ const HistoryScreen = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const user = useSelector((state) => state.user);
   const [userDates, setUserDates] = useState([]);
-  const [userMealData, setUserMealData] = useState();
+  const [userMealData, setUserMealData] = useState([]);
   useEffect(() => {
     console.log("User Id ::", user);
     const fetchUserDates = async () => {
@@ -28,13 +28,6 @@ const HistoryScreen = () => {
     };
     fetchUserDates();
   }, []);
-
-  // Dummy data for demonstration
-  const historyData = [
-    { day: "2023-07-06", carbs: { breakfast: 25, lunch: 45, dinner: 30 } },
-    { day: "2023-07-07", carbs: { breakfast: 35, lunch: 55, dinner: 40 } },
-    { day: "2023-07-08", carbs: { breakfast: 40, lunch: 50, dinner: 35 } },
-  ];
 
   const handleDaySelect = (day) => {
     setSelectedDay(day);
@@ -69,28 +62,17 @@ const HistoryScreen = () => {
           />
         ))}
       </List.Section>
-      {selectedDay && (
-        <View style={styles.selectedDayContainer}>
-          <Text style={styles.selectedDayText}>
-            Selected day: {selectedDay}
-          </Text>
-          <Text>
-            Breakfast:{" "}
-            {userMealData.mealType == "Breakfast"
-              ? userMealData.totalCarbs
-              : "0"}
-            g
-          </Text>
-          <Text>
-            Lunch:{" "}
-            {userMealData.mealType == "Lunch" ? userMealData.totalCarbs : "0"}{" "}
-          </Text>
-          <Text>
-            Dinner:{" "}
-            {userMealData.mealType == "Dinner" ? userMealData.totalCarbs : "0"}{" "}
-          </Text>
-        </View>
-      )}
+      <Text style={styles.selectedDayText}>Selected day: {selectedDay}</Text>
+      {selectedDay &&
+        userMealData.map(function (data, i) {
+          return (
+            <>
+              <Text>
+                {data?.mealType} : {data?.totalCarbs}
+              </Text>
+            </>
+          );
+        })}
       <Button
         mode="contained"
         onPress={() => setSelectedDay(null)}

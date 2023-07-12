@@ -6,7 +6,7 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import { LightTheme } from "../../utils/theme";
-import HomeScreen from "../../pages/homeScreen";
+// import HomeScreen from "../../pages/homeScreen";
 import LoginScreen from "../../pages/loginScreen";
 import HeaderLogo from "../../ui/headerLogo";
 import { firebase } from "../../config";
