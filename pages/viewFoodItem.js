@@ -5,8 +5,9 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { Button, List } from "react-native-paper";
 
-const ViewFoodItem = ({ navigation }) => {
+const ViewFoodItem = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
+  const { tag } = route?.params;
   const [foodItems, setFoodItems] = useState([]);
 
   const getFoodItems = async () => {
@@ -14,7 +15,7 @@ const ViewFoodItem = ({ navigation }) => {
       userId: user?.user?.uid
         ? user?.user?.uid
         : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
-      mealType: "Breakfast",
+      mealType: tag,
     };
     await axios
       .get(
@@ -41,9 +42,9 @@ const ViewFoodItem = ({ navigation }) => {
     return carbs ? carbs.amount : 0;
   };
 
-  const onAddFood = (TAG) => {
+  const onAddFood = () => {
     navigation.navigate("FoodSearch", {
-      tag: TAG,
+      tag: tag,
     });
   };
 
@@ -57,20 +58,29 @@ const ViewFoodItem = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <List.Section style={styles.listSection}>
-        <List.Subheader>
-          {" "}
-          <Text style={styles.message}>My Food Items</Text>
-        </List.Subheader>
-        {foodItems?.map((item, index) => (
-          <List.Item
-            key={index}
-            title={item.description}
-            description={`Carbs: ${getCarbs(item)}`}
-            right={() => <RightListView item={item} />}
-          />
-        ))}
-      </List.Section>
+      {foodItems?.length > 0 ? (
+        <List.Section style={styles.listSection}>
+          <List.Subheader>
+            {" "}
+            <Text style={styles.message}>My Food Items</Text>
+          </List.Subheader>
+          {foodItems?.map((item, index) => (
+            <List.Item
+              key={index}
+              title={item.description}
+              description={`Carbs: ${getCarbs(item)}`}
+              right={() => <RightListView item={item} />}
+            />
+          ))}
+        </List.Section>
+      ) : (
+        <View style={styles.emptyCartContainer}>
+          <Text style={styles.message}>You have no Food Items!!</Text>
+          <Button mode="contained" onPress={onAddFood} style={styles.button}>
+            Add Food Here
+          </Button>
+        </View>
+      )}
       <Button style={styles.buttonStyle} onPress={onAddFood}>
         Add Food
       </Button>
@@ -85,9 +95,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  emptyCartContainer: {
+    justifyContent: "center",
+    flex: 1,
+    alignItems: "center",
+  },
   message: {
     fontSize: 24,
     marginBottom: 16,
+  },
+  button: {
+    marginTop: 16,
+    width: "50%",
   },
   listSection: {
     marginBottom: 16,

@@ -4,9 +4,9 @@ import { Text, Button, List, Divider } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { calculateCarbs } from "../utils/nutritionCalculation";
 import axios from "axios";
-import { useEffect } from "react";
 
-const FoodCart = ({ navigation }) => {
+const FoodCart = ({ navigation, route }) => {
+  const { tag } = route?.params;
   const user = useSelector((state) => state.user);
   const foodItems = useSelector((state) => state.addFood);
   const totalCarbs = calculateCarbs(foodItems?.foodItems);
@@ -18,13 +18,13 @@ const FoodCart = ({ navigation }) => {
         : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
-      mealType: "Breakfast",
+      mealType: tag,
     };
     await axios
       .post("http://127.0.0.1:3000/api/submitData", params)
       .then(() => {
         console.log("Data submitted successfully.");
-        navigation.navigation("homeScreen");
+        navigation.navigate("HomeScreen");
       })
       .catch((e) => {
         console.log("Error : ", e);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useRoute } from "@react-navigation/native";
 import {
   Searchbar,
   List,
@@ -18,13 +17,11 @@ import {
 } from "../redux/actions/actions";
 import { useDispatch, useSelector } from "react-redux";
 
-const FoodSearch = ({ navigation }) => {
+const FoodSearch = ({ navigation, route }) => {
   const theme = useTheme();
-  const route = useRoute();
+  const { tag } = route?.params;
   const dispatch = useDispatch();
   const foodSearchData = useSelector((state) => state.api);
-
-  const { params } = route;
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(null);
@@ -78,7 +75,7 @@ const FoodSearch = ({ navigation }) => {
 
   const navigateToFoodItem = () => {
     navigation.navigate("AddFood", {
-      params,
+      tag: tag,
     });
   };
 
@@ -99,7 +96,7 @@ const FoodSearch = ({ navigation }) => {
       format: "abridged",
       nutrients: "208,204,205,262,203,291,301,302,303,304,305,306,307,601,",
     };
-    dispatch(fetchFoodItemByIdAPI(params, item?.fdcId, "BREAKFAST"));
+    dispatch(fetchFoodItemByIdAPI(params, item?.fdcId, tag));
   };
 
   const clearSearch = () => {
@@ -124,7 +121,7 @@ const FoodSearch = ({ navigation }) => {
   };
 
   const onCartPress = () => {
-    navigation.navigate("FoodCart");
+    navigation.navigate("FoodCart", { tag: tag });
   };
 
   return (
