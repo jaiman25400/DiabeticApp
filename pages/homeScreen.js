@@ -7,9 +7,9 @@ import { useSelector, useDispatch } from "react-redux";
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const addFoodLog = (TAG) => {
-    navigation.navigate("FoodSearch", {
-      tag: TAG,
+  const addFoodLog = (tag) => {
+    navigation.navigate("ViewFoodItem", {
+      tag: tag,
     });
   };
 
@@ -86,42 +86,42 @@ const HomeScreen = ({ navigation }) => {
         <Button
           mode="contained"
           style={[styles.button, styles.breakfastButton]}
-          onPress={() => addFoodLog("BREAKFAST")}
+          onPress={() => addFoodLog("Breakfast")}
           contentStyle={styles.buttonContent}
         >
-          Breakfast - 100 Carbs
+          Breakfast
         </Button>
       </View>
       <View style={styles.buttonContainer}>
         <Button
           mode="contained"
           style={[styles.button, styles.lunchButton]}
-          onPress={() => handleButtonPress(150)}
+          onPress={() => addFoodLog("Lunch")}
           contentStyle={styles.buttonContent}
         >
-          Lunch - 150 Carbs
+          Lunch
         </Button>
       </View>
       <View style={styles.buttonContainer}>
         <Button
           mode="contained"
           style={[styles.button, styles.dinnerButton]}
-          onPress={() => handleButtonPress(200)}
+          onPress={() => addFoodLog("Dinner")}
           contentStyle={styles.buttonContent}
         >
-          Dinner - 200 Carbs
+          Dinner
         </Button>
       </View>
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <Button
           mode="contained"
           style={[styles.button, styles.snackButton]}
           onPress={() => handleButtonPress(50)}
           contentStyle={styles.buttonContent}
         >
-          Snack - 50 Carbs
+          Snack
         </Button>
-      </View>
+      </View> */}
     </View>
   );
 };
