@@ -16,7 +16,6 @@ import AddCarbsModal from "../ui/addCarbsModel";
 const AddFood = ({ navigation }) => {
   const dispatch = useDispatch();
   const foodItem = useSelector((state) => state.api);
-  const user = useSelector((state) => state.user);
   const addFoodItem = useSelector((state) => state.addFood);
   const [modalVisible, setModalVisible] = useState(false);
   const [foodDetails, setFoodDetails] = useState(null);
@@ -32,22 +31,22 @@ const AddFood = ({ navigation }) => {
       let carbs = foodItem.foodItem?.foodNutrients?.find(
         (x) => x.number == 205
       );
-      setCarbs(carbs.amount.toFixed(2));
-      setTotalCarbs(carbs.amount.toFixed(2));
+      setCarbs(carbs?.amount?.toFixed(2));
+      setTotalCarbs(carbs?.amount?.toFixed(2));
       setCarbUnit(carbs.unitName);
     }
   }, []);
 
   // Function to handle incrementing the serving count
   const incrementServingCount = () => {
-    setTotalCarbs(carbs * (servingCount + 1).toFixed(2));
+    setTotalCarbs((carbs * (servingCount + 1))?.toFixed(2));
     setServingCount(servingCount + 1);
   };
 
   // Function to handle decrementing the serving count
   const decrementServingCount = () => {
     if (servingCount > 1) {
-      setTotalCarbs((carbs * (servingCount - 1)).toFixed(2));
+      setTotalCarbs((carbs * (servingCount - 1))?.toFixed(2));
       setServingCount(servingCount - 1);
     }
   };

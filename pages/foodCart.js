@@ -5,17 +5,20 @@ import { useSelector } from "react-redux";
 import { calculateCarbs } from "../utils/nutritionCalculation";
 import axios from "axios";
 
-const FoodCart = ({ navigation }) => {
+const FoodCart = ({ navigation, route }) => {
+  const { tag } = route?.params;
   const user = useSelector((state) => state.user);
   const foodItems = useSelector((state) => state.addFood);
   const totalCarbs = calculateCarbs(foodItems?.foodItems);
 
   const onSave = async () => {
     let params = {
-      userId: user?.user?.uid,
+      userId: user?.user?.uid
+        ? user?.user?.uid
+        : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
-      mealType: "Breakfast",
+      mealType: tag,
     };
     //https://diabeticapp-backend.onrender.com
     //http://127.0.0.1:3000
@@ -23,6 +26,7 @@ const FoodCart = ({ navigation }) => {
       .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
       .then(() => {
         console.log("Data submitted successfully.");
+        navigation.navigate("HomeScreen");
       })
       .catch((e) => {
         console.log("Error : ", e);
@@ -82,7 +86,7 @@ const FoodCart = ({ navigation }) => {
 
         <View style={styles.totalContainer}>
           <Text style={styles.totalText}>
-            Total Carbs: {totalCarbs ? totalCarbs : 0} g
+            Total Carbs: {totalCarbs ? totalCarbs?.toFixed(2) : 0} g
           </Text>
           <Button onPress={onSave} mode="contained" style={styles.saveButton}>
             Save

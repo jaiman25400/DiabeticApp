@@ -6,7 +6,6 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import { LightTheme } from "../../utils/theme";
-// import HomeScreen from "../../pages/homeScreen";
 import LoginScreen from "../../pages/loginScreen";
 import HeaderLogo from "../../ui/headerLogo";
 import { firebase } from "../../config";
@@ -78,7 +77,7 @@ export default function NavigationStack() {
                   name="Home"
                   component={HomeNavigation}
                   options={{
-                    headerTitle: (props) => <HeaderLogo {...props} />,
+                    headerShown: false,
                   }}
                 />
                 <Drawer.Screen name="History" component={HistoryScreen} />
