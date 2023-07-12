@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "react-native-paper";
 import { useSelector } from "react-redux";
-import { calculateCarbs } from "../utils/nutritionCalculation";
+import { calculateCarbs, getInsultinDose } from "../utils/nutritionCalculation";
 import axios from "axios";
 
 const FoodCart = ({ navigation, route }) => {
@@ -17,6 +17,7 @@ const FoodCart = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
   const foodItems = useSelector((state) => state.addFood);
   const totalCarbs = calculateCarbs(foodItems?.foodItems);
+  const insulinDose = getInsultinDose(totalCarbs, 10);
 
   const onSave = async () => {
     let params = {
@@ -26,7 +27,9 @@ const FoodCart = ({ navigation, route }) => {
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
       mealType: tag,
+      insulinDose: insulinDose,
     };
+    console.log("params:", params);
     //https://diabeticapp-backend.onrender.com
     //http://127.0.0.1:3000
     await axios
@@ -116,6 +119,9 @@ const FoodCart = ({ navigation, route }) => {
           <Text style={styles.totalText}>
             Total Carbs: {totalCarbs ? totalCarbs?.toFixed(2) : 0} g
           </Text>
+          <Text style={styles.totalText}>
+            Your Insulin Dose: {insulinDose ? insulinDose : 0} units
+          </Text>
           <Button onPress={onSave} mode="contained" style={styles.saveButton}>
             Save
           </Button>
@@ -155,15 +161,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   totalContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: "column",
+    // justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 10,
   },
   totalText: {
     fontSize: 18,
+    paddingVertical: 4,
   },
   saveButton: {
-    marginLeft: 16,
+    marginTop: 15,
+    marginHorizontal: 16,
   },
 });
