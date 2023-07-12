@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { firebase } from "../config";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 const HomeScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   const addFoodLog = (TAG) => {
     navigation.navigate("ViewFoodItem", {
       tag: TAG,
@@ -16,9 +18,47 @@ const HomeScreen = ({ navigation }) => {
 
   const userStateInfo = useSelector((state) => state);
   useEffect(() => {
-    console.log("Home Use Eff :", userStateInfo);
+    const fetchUserData = async () => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const uid = user.uid;
+        console.log("UIDD :", uid);
+        const userDocRef = firebase.firestore().collection("users").doc(uid);
+        const userProfRef = firebase
+          .firestore()
+          .collection("userProfile")
+          .doc(uid);
+
+        const userDoc = await userDocRef.get();
+        const userProf = await userProfRef.get();
+
+        if (userDoc.exists) {
+          const user = { uid };
+          dispatch({ type: "Login", payload: user });
+          const userData = userDoc.data();
+          dispatch({
+            type: "userData",
+            payload: { userData },
+          });
+        } else {
+        }
+
+        if (userProf.exists) {
+          const userProfData = userProf.data();
+          dispatch({
+            type: "userProfileData",
+            payload: { userProfData },
+          });
+        } else {
+          console.log("User Prof data data not found.");
+        }
+      }
+    };
+
+    fetchUserData();
   }, []);
 
+  console.log("HomeScreen :", userStateInfo);
   const [carbsConsumed, setCarbsConsumed] = useState(0);
   const totalCarbsGoal = 500;
 
