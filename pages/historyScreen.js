@@ -3,31 +3,37 @@ import { View, StyleSheet } from "react-native";
 import { Button, List, Text } from "react-native-paper";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 
 const HistoryScreen = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const user = useSelector((state) => state.user);
   const [userDates, setUserDates] = useState([]);
   const [userMealData, setUserMealData] = useState([]);
+
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    console.log("User Id ::", user);
-    const fetchUserDates = async () => {
-      axios
-        .get("https://diabeticapp-backend.onrender.com/api/userDates", {
-          params: {
-            userId: user?.user?.uid,
-          },
-        })
-        .then((res) => {
-          console.log("Dates :", res);
-          setUserDates(res.data);
-        })
-        .catch((err) => {
-          console.log("Err", err);
-        });
-    };
-    fetchUserDates();
-  }, []);
+    if (isFocused) {
+      console.log("User Id ::", user);
+      const fetchUserDates = async () => {
+        axios
+          .get("https://diabeticapp-backend.onrender.com/api/userDates", {
+            params: {
+              userId: user?.user?.uid,
+            },
+          })
+          .then((res) => {
+            console.log("Dates :", res);
+            setUserDates(res.data);
+          })
+          .catch((err) => {
+            console.log("Err", err);
+          });
+      };
+      fetchUserDates();
+    }
+  }, [isFocused]);
 
   const handleDaySelect = (day) => {
     setSelectedDay(day);
