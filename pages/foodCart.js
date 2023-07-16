@@ -5,42 +5,54 @@ import {
   Button,
   List,
   Divider,
-  Checkbox,
+  useTheme,
   IconButton,
+  Tooltip,
 } from "react-native-paper";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { calculateCarbs, getInsultinDose } from "../utils/nutritionCalculation";
-import axios from "axios";
+import { RemoveFoodItem } from "../redux/actions/actionTypes";
+import { useEffect } from "react";
+import { fetchFoodItemByIdAPI } from "../redux/actions/actions";
 
 const FoodCart = ({ navigation, route }) => {
   const { tag } = route?.params;
+  const theme = useTheme();
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const foodData = useSelector((state) => state.api);
   const foodItems = useSelector((state) => state.addFood);
-  const totalCarbs = calculateCarbs(foodItems?.foodItems);
+  const totalCarbs =
+    foodItems?.foodItems?.length > 0 ? calculateCarbs(foodItems?.foodItems) : 0;
   const insulinDose = getInsultinDose(totalCarbs, 10);
+
+  useEffect(() => {
+    if (foodData?.foodItem?.fdcId && foodData.success) {
+      navigation.navigate("AddFood", {
+        tag: tag,
+        isDelete: true,
+      });
+    }
+  }, [foodData]);
 
   const onSave = async () => {
     let params = {
-      userId: user?.user?.uid
-        ? user?.user?.uid
-        : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
+      userId: user?.user?.uid,
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
       mealType: tag,
       insulinDose: insulinDose,
     };
     console.log("params:", params);
-    //https://diabeticapp-backend.onrender.com
-    //http://127.0.0.1:3000
-    await axios
-      .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
-      .then(() => {
-        console.log("Data submitted successfully.");
-        navigation.navigate("HomeScreen");
-      })
-      .catch((e) => {
-        console.log("Error : ", e);
-      });
+    // await axios
+    //   .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
+    //   .then(() => {
+    //     console.log("Data submitted successfully.");
+    //     navigation.navigate("HomeScreen");
+    //   })
+    //   .catch((e) => {
+    //     console.log("Error : ", e);
+    //   });
   };
 
   const getCarbs = (item) => {
@@ -50,15 +62,23 @@ const FoodCart = ({ navigation, route }) => {
     });
     return carbs ? carbs.amount : 0;
   };
-  const handleEditItem = (itemId) => {
+  const handleEditItem = (fdcId) => {
     // Handle edit action here
-    console.log("Edit item with ID:", itemId);
+    const params = {
+      format: "abridged",
+      nutrients: "208,204,205,262,203,291,301,302,303,304,305,306,307,601,",
+    };
+    dispatch(fetchFoodItemByIdAPI(params, fdcId, tag));
   };
 
-  const handleDeleteItem = (itemId) => {
+  const handleDeleteItem = (fdcId) => {
     // Handle delete action here
-    console.log("Delete item with ID:", itemId);
+    const updatedArray = foodItems?.foodItems?.filter(
+      (item) => item.fdcId !== fdcId
+    );
+    dispatch(RemoveFoodItem(updatedArray));
   };
+
   const EmptyCart = () => {
     return (
       <View style={styles.emptyCartContainer}>
@@ -99,16 +119,20 @@ const FoodCart = ({ navigation, route }) => {
                 description={`Carbs: ${getCarbs(item)}`}
                 right={() => <RightListView item={item} />}
               />
-              <IconButton
-                icon="pencil"
-                onPress={() => handleEditItem(item.fdcId)}
-                color={"#007aff"}
-              />
-              <IconButton
-                icon="delete"
-                onPress={() => handleDeleteItem(item.fdcId)}
-                color={"#000"}
-              />
+              <Tooltip title="Edit" leaveTouchDelay={1000}>
+                <IconButton
+                  icon="pencil"
+                  onPress={() => handleEditItem(item.fdcId)}
+                  iconColor={theme.colors.primary}
+                />
+              </Tooltip>
+              <Tooltip title="Delete" leaveTouchDelay={1000}>
+                <IconButton
+                  icon="delete"
+                  onPress={() => handleDeleteItem(item.fdcId)}
+                  iconColor={theme.colors.error}
+                />
+              </Tooltip>
             </View>
           ))}
         </List.Section>
@@ -162,7 +186,6 @@ const styles = StyleSheet.create({
   },
   totalContainer: {
     flexDirection: "column",
-    // justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 10,
   },

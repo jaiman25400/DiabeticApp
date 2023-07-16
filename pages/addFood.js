@@ -7,13 +7,18 @@ import {
   Title,
   Paragraph,
   IconButton,
+  Portal,
+  Dialog,
+  Snackbar,
 } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { clearFoodItemResults } from "../redux/actions/actions";
 import * as actionTypes from "../redux/actions/actionTypes";
 import AddCarbsModal from "../ui/addCarbsModel";
 
-const AddFood = ({ navigation }) => {
+const AddFood = ({ navigation, route }) => {
+  const { isDelete } = route?.params;
+  console.log(isDelete);
   const dispatch = useDispatch();
   const foodItem = useSelector((state) => state.api);
   const addFoodItem = useSelector((state) => state.addFood);
@@ -23,6 +28,19 @@ const AddFood = ({ navigation }) => {
   const [carbs, setCarbs] = useState(0);
   const [totalCarbs, setTotalCarbs] = useState(0);
   const [carbUnit, setCarbUnit] = useState("");
+
+  const [isDialogVisible, setDialogVisible] = useState(false);
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+
+  const showDialog = () => setDialogVisible(true);
+
+  const hideDialog = () => setDialogVisible(false);
+
+  const showSnackBar = () => setIsSnackbarVisible(true);
+
+  const onDismissSnackBar = () => {
+    setIsSnackbarVisible(false);
+  };
 
   useEffect(() => {
     if (foodItem) {
@@ -62,8 +80,29 @@ const AddFood = ({ navigation }) => {
           count: count,
         },
       ];
-      dispatch(actionTypes.AddFoodItem(params));
-      navigation.goBack();
+      showSnackBar();
+      setTimeout(() => {
+        dispatch(actionTypes.AddFoodItem(params));
+        navigation.goBack();
+      }, 1000);
+    } else {
+      if (isDelete) {
+        allItems = allItems?.filter((x) => x.fdcId !== item.fdcId);
+        let params = [
+          ...allItems,
+          {
+            ...item,
+            count: count,
+          },
+        ];
+        showSnackBar();
+        setTimeout(() => {
+          dispatch(actionTypes.AddFoodItem(params));
+          navigation.goBack();
+        }, 1000);
+      } else {
+        showDialog();
+      }
     }
   };
 
@@ -83,6 +122,43 @@ const AddFood = ({ navigation }) => {
     });
     let newFoodDetails = { ...foodDetails, foodNutrients: newArray };
     addFood(newFoodDetails, 1);
+  };
+
+  const RenderPortal = () => {
+    return (
+      <Portal>
+        <Dialog visible={isDialogVisible} onDismiss={hideDialog}>
+          <Dialog.Title>Uhhhmm...</Dialog.Title>
+          <Dialog.Content>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <IconButton
+                icon="alert-circle-outline"
+                size={24}
+                iconColor="red"
+              />
+              <Text style={{ marginLeft: 8 }}>
+                You have already added this item.
+              </Text>
+            </View>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>OK</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    );
+  };
+
+  const RenderSucceessMessage = () => {
+    return (
+      <Snackbar
+        visible={isSnackbarVisible}
+        onDismiss={onDismissSnackBar}
+        duration={1000}
+      >
+        Item added to Cart!
+      </Snackbar>
+    );
   };
 
   return (
@@ -140,6 +216,8 @@ const AddFood = ({ navigation }) => {
         onDismiss={() => setModalVisible(false)}
         onSave={handleSaveCarbs}
       />
+      <RenderPortal />
+      <RenderSucceessMessage />
     </View>
   );
 };

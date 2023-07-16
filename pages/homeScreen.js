@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
 import { Button, Card, Divider, Subheading, Text } from "react-native-paper";
 import { firebase } from "../config";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { ClearFoodCart } from "../redux/actions/actionTypes";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [totalCarbs, setTotalCarbs] = useState([]);
+
+  // This is called every time user's lands on Home Screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to be executed when the screen gains focus
+      dispatch(ClearFoodCart());
+    }, [])
+  );
 
   const addFoodLog = (tag) => {
     navigation.navigate("ViewFoodItem", {
@@ -21,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
     };
     await axios
       .get(
-        `http://127.0.0.1:3000/api/homeScreenCarbDetails?userId=${params.userId}`
+        `https://diabeticapp-backend.onrender.com/api/homeScreenCarbDetails?userId=${params.userId}`
       )
       .then((res) => {
         console.log("Data:", res);

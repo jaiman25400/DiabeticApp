@@ -32,8 +32,6 @@ const FoodSearch = ({ navigation, route }) => {
     clearSearch();
   }, []);
 
-  useEffect(() => {});
-
   useEffect(() => {
     if (foodSearchData?.foodSearch?.foods?.length > 0) {
       setTotalPages(foodSearchData?.foodSearch?.totalPages);

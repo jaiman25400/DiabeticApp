@@ -46,6 +46,10 @@ const RemoveFoodItem = (data) => ({
   payload: data,
 });
 
+const ClearFoodCart = () => ({
+  type: TYPES.CLEAR_FOOD_CART,
+});
+
 export {
   //fetch Food search
   fetchFoodSearch,
@@ -62,4 +66,5 @@ export {
   //Add Food Items
   AddFoodItem,
   RemoveFoodItem,
+  ClearFoodCart,
 };
