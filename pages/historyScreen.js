@@ -1,4 +1,4 @@
-import { Button, Divider, List, Text } from "react-native-paper";
+import { Button, List, Text } from "react-native-paper";
 import axios from "axios";
 import { StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
@@ -68,28 +68,14 @@ const HistoryScreen = () => {
           />
         ))}
       </List.Section>
-      {selectedDay ? (
-        <Text
-          style={{
-            ...styles.selectedDayText,
-            paddingVertical: 12,
-            color: "black",
-          }}
-        >
-          Selected day: {selectedDay}
-        </Text>
-      ) : null}
+      <Text style={styles.selectedDayText}>Selected day: {selectedDay}</Text>
       {selectedDay &&
         userMealData.map(function (data, i) {
           return (
-            <View style={{ paddingVertical: 5 }} key={data._id}>
+            <View style={styles.chartContainer} key={data._id}>
               <Text style={styles.selectedDayText}>
-                {data?.mealType} : {data?.totalCarbs} Carbs
+                {data?.mealType} : {data?.totalCarbs}
               </Text>
-              <Text style={{ paddingBottom: 10 }}>
-                {data?.insulinDose} units of Insulin Consumed
-              </Text>
-              <Divider />
             </View>
           );
         })}
@@ -121,10 +107,9 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   selectedDayText: {
-    color: "rgb(0, 98, 158)",
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   clearButton: {
     marginTop: 16,
