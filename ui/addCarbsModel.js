@@ -25,13 +25,22 @@ const AddCarbsModal = ({ visible, onDismiss, onSave }) => {
             keyboardType="numeric"
             style={styles.input}
           />
-          <Button
-            mode="contained"
-            onPress={handleSave}
-            style={styles.saveButton}
-          >
-            Save
-          </Button>
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            <Button
+              mode="contained"
+              onPress={onDismiss}
+              style={styles.saveButton}
+            >
+              Close
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleSave}
+              style={styles.saveButton}
+            >
+              Save
+            </Button>
+          </View>
         </View>
       </Modal>
     </Portal>
@@ -40,7 +49,7 @@ const AddCarbsModal = ({ visible, onDismiss, onSave }) => {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    flex: 1,
+    // flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -49,13 +58,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
+    width: "80%",
   },
   input: {
     marginBottom: 16,
     width: "100%",
   },
   saveButton: {
-    width: "100%",
+    //width: "100%",
   },
 });
 

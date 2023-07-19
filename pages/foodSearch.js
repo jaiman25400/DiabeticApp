@@ -115,9 +115,9 @@ const FoodSearch = ({ navigation, route }) => {
           Carbs: {item?.carbs?.value}
           {item?.carbs?.unitName}
         </Text>
-        <Text variant="bodyMedium">
+        {/* <Text variant="bodyMedium">
           {item?.measurement?.disseminationText}-{item?.measurement?.gramWeight}
-        </Text>
+        </Text> */}
       </View>
     );
   };
@@ -153,6 +153,8 @@ const FoodSearch = ({ navigation, route }) => {
                 <List.Item
                   onPress={() => onFoodItem(item)}
                   key={item.fdcId}
+                  titleEllipsizeMode="tail"
+                  titleNumberOfLines={5}
                   title={item.description}
                   description={item.foodCategory}
                   right={() => <LeftListView item={item} />}

@@ -14,12 +14,7 @@ import { calculateCarbs, getInsultinDose } from "../utils/nutritionCalculation";
 import { RemoveFoodItem } from "../redux/actions/actionTypes";
 import { useEffect } from "react";
 import { fetchFoodItemByIdAPI } from "../redux/actions/actions";
-//import AsyncStorage from "@react-native-async-storage/async-storage";
-import BackgroundTimer from "react-native-background-timer";
-import { TouchableOpacity } from "react-native-gesture-handler";
-//import PushNotification from "react-native-push-notification";
-
-const STORAGE_KEY = "@MyApp:timer";
+import axios from "axios";
 
 const FoodCart = ({ navigation, route }) => {
   const { tag } = route?.params;
@@ -31,8 +26,6 @@ const FoodCart = ({ navigation, route }) => {
   const totalCarbs =
     foodItems?.foodItems?.length > 0 ? calculateCarbs(foodItems?.foodItems) : 0;
   const insulinDose = getInsultinDose(totalCarbs, 10);
-  const [timerStarted, setTimerStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     if (foodData?.foodItem?.fdcId && foodData.success) {
@@ -43,77 +36,6 @@ const FoodCart = ({ navigation, route }) => {
     }
   }, [foodData]);
 
-  const startTimer = () => {
-    const threeHoursInSeconds = 3 * 60 * 60;
-    setTimerStarted(true);
-    BackgroundTimer.start();
-    BackgroundTimer.runBackgroundTimer(() => {
-      // Code to execute after every second
-      setTimeLeft((prevTimeLeft) => {
-        if (prevTimeLeft > 0) {
-          return prevTimeLeft - 1;
-        } else {
-          // Timer expired
-          //showNotification();
-          stopTimer();
-          return 0;
-        }
-      });
-    }, 1000); // 1000 milliseconds = 1 second interval
-
-    // Save the timer start time to AsyncStorage
-    const startTime = Date.now();
-    AsyncStorage.setItem(STORAGE_KEY, startTime.toString());
-  };
-
-  const stopTimer = () => {
-    BackgroundTimer.stop();
-    setTimerStarted(false);
-    // Remove the timer start time from AsyncStorage
-    AsyncStorage.removeItem(STORAGE_KEY);
-  };
-
-  // useEffect(() => {
-  //   // Retrieve the timer start time from AsyncStorage
-  //   AsyncStorage.getItem(STORAGE_KEY).then((startTime) => {
-  //     if (startTime) {
-  //       const currentTime = Date.now();
-  //       const elapsedTimeInSeconds =
-  //         (currentTime - parseInt(startTime, 10)) / 1000;
-  //       const remainingTimeInSeconds = 3 * 60 * 60 - elapsedTimeInSeconds;
-  //       if (remainingTimeInSeconds > 0) {
-  //         setTimeLeft(remainingTimeInSeconds);
-  //         startTimer();
-  //       } else {
-  //         // Timer already expired
-  //         Alert.alert("Timer", "3 hours have passed!");
-  //       }
-  //     }
-  //   });
-
-  //   return () => {
-  //     // Clean up the timer when the component unmounts
-  //     stopTimer();
-  //   };
-  // }, []);
-
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
-  };
-
-  const showNotification = () => {
-    PushNotification.localNotification({
-      title: "Meal Timer",
-      message: "Your timer has expired!",
-    });
-  };
-
   const onSave = async () => {
     let params = {
       userId: user?.user?.uid,
@@ -122,6 +44,7 @@ const FoodCart = ({ navigation, route }) => {
       mealType: tag,
       insulinDose: insulinDose,
     };
+    //console.log("params:", params);
     await axios
       .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
       .then(() => {
@@ -168,18 +91,6 @@ const FoodCart = ({ navigation, route }) => {
         >
           Go Back
         </Button>
-        <View>
-          <Text>Time Left: {formatTime(timeLeft)}</Text>
-          {timerStarted ? (
-            <TouchableOpacity onPress={stopTimer}>
-              <Text>Stop Timer</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={startTimer}>
-              <Text>Start Timer</Text>
-            </TouchableOpacity>
-          )}
-        </View>
       </View>
     );
   };
