@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Modal, Portal, TextInput } from "react-native-paper";
 
-const AddCarbsModal = ({ visible, onDismiss, onSave }) => {
+const AddCarbsModal = ({ visible, onDismiss, onSave, placeholder }) => {
   const [carbs, setCarbs] = useState("");
 
   const handleSave = () => {
@@ -19,22 +19,27 @@ const AddCarbsModal = ({ visible, onDismiss, onSave }) => {
       >
         <View style={styles.modalContent}>
           <TextInput
-            label="Carbs"
+            label={placeholder ? placeholder : "Carbs"}
             value={carbs}
             onChangeText={(text) => setCarbs(text)}
             keyboardType="numeric"
             style={styles.input}
           />
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignSelf: "flex-end",
+            }}
+          >
             <Button
-              mode="contained"
+              //mode="contained"
               onPress={onDismiss}
               style={styles.saveButton}
             >
               Close
             </Button>
             <Button
-              mode="contained"
+              //mode="contained"
               onPress={handleSave}
               style={styles.saveButton}
             >
