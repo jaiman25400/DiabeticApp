@@ -1,13 +1,38 @@
 import React, { useState, useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, StyleSheet } from "react-native";
-import { Button, Card, Divider, Subheading, Text } from "react-native-paper";
+import { Button, Divider, Text } from "react-native-paper";
 import { firebase } from "../config";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { ClearFoodCart } from "../redux/actions/actionTypes";
+import ProgressBar from "react-native-progress/Bar";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [totalCarbs, setTotalCarbs] = useState([]);
+  const [carbsConsumed, setCarbsConsumed] = useState(0);
+  const totalCarbsGoal = 150;
+
+  // This is called every time user's lands on Home Screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Code to be executed when the screen gains focus
+      const user = firebase.auth().currentUser;
+      dispatch(ClearFoodCart());
+      getCarbsDetails(user?.uid);
+    }, [])
+  );
+
+  useEffect(() => {
+    let count = 0;
+    count =
+      count +
+      getTotalCarbsNum("Breakfast") +
+      getTotalCarbsNum("Lunch") +
+      getTotalCarbsNum("Dinner");
+    setCarbsConsumed(count);
+  }, [totalCarbs]);
 
   const addFoodLog = (tag) => {
     navigation.navigate("ViewFoodItem", {
@@ -21,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
     };
     await axios
       .get(
-        `http://127.0.0.1:3000/api/homeScreenCarbDetails?userId=${params.userId}`
+        `https://diabeticapp-backend.onrender.com/api/homeScreenCarbDetails?userId=${params.userId}`
       )
       .then((res) => {
         console.log("Data:", res);
@@ -32,7 +57,6 @@ const HomeScreen = ({ navigation }) => {
       });
   };
 
-  const userStateInfo = useSelector((state) => state);
   useEffect(() => {
     const user = firebase.auth().currentUser;
     const fetchUserData = async () => {
@@ -75,37 +99,44 @@ const HomeScreen = ({ navigation }) => {
     getCarbsDetails(user?.uid);
   }, []);
 
-  console.log("HomeScreen :", userStateInfo);
-  const [carbsConsumed, setCarbsConsumed] = useState(0);
-  const totalCarbsGoal = 500;
-
-  const handleButtonPress = (carbs) => {
-    setCarbsConsumed(carbsConsumed + carbs);
-  };
-
-  const calculateCycleProgress = () => {
-    return (carbsConsumed / totalCarbsGoal) * 30;
-  };
-
   const getTotalCarbs = (tag) => {
     let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
     return carbs ? `  (Carbs - ${carbs}g)` : null;
   };
+  const getTotalCarbsNum = (tag) => {
+    let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
+    return carbs ? carbs : 0;
+  };
+
+  const getProgressBarPercentage = () => {
+    return carbsConsumed > 0 && totalCarbsGoal > 0
+      ? carbsConsumed / totalCarbsGoal
+      : 0;
+  };
+
+  const progressColor = "#1356ba";
+  const backgroundColor = "#454241";
 
   return (
     <View style={styles.container}>
-      <View style={styles.cycleContainer}>
-        <View style={styles.cycle}>
-          <View
-            style={[
-              styles.cycleProgress,
-              { transform: [{ rotate: `${calculateCycleProgress()}deg` }] },
-            ]}
-          />
-          <Text
-            style={styles.cycleText}
-          >{`${carbsConsumed} / ${totalCarbsGoal} Carbs`}</Text>
-        </View>
+      <View style={{ marginBottom: 20 }}>
+        <ProgressBar
+          progress={getProgressBarPercentage()}
+          width={200}
+          height={50}
+          color={progressColor}
+          unfilledColor={backgroundColor}
+          borderWidth={0}
+        />
+        <Divider />
+        <Text
+          style={{
+            alignSelf: "center",
+            padding: 5,
+          }}
+        >
+          CARBS : {carbsConsumed}/{totalCarbsGoal}
+        </Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button
@@ -140,16 +171,6 @@ const HomeScreen = ({ navigation }) => {
           {getTotalCarbs("Dinner")}
         </Button>
       </View>
-      {/* <View style={styles.buttonContainer}>
-        <Button
-          mode="contained"
-          style={[styles.button, styles.snackButton]}
-          onPress={() => handleButtonPress(50)}
-          contentStyle={styles.buttonContent}
-        >
-          Snack
-        </Button>
-      </View> */}
     </View>
   );
 };

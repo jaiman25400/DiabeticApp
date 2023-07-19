@@ -16,6 +16,11 @@ const addFoodReducer = (state = initialState, action) => {
         ...state,
         foodItems: action.payload,
       };
+    case TYPES.CLEAR_FOOD_CART:
+      return {
+        ...state,
+        foodItems: null,
+      };
     default:
       return state;
   }

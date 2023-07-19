@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Button, Divider, List, Text } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Button,
+  Divider,
+  List,
+  Text,
+} from "react-native-paper";
 
 const ViewFoodItem = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
@@ -11,25 +17,27 @@ const ViewFoodItem = ({ navigation, route }) => {
   const [foodItems, setFoodItems] = useState([]);
   const [totalCarbs, setTotalCarbs] = useState("");
   const [insulinDose, setInsulinDose] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const getFoodItems = async () => {
     let params = {
-      userId: user?.user?.uid
-        ? user?.user?.uid
-        : "GNpgaWPeOGZBsSDxf23lrDnCGUt2", // static for now , fiberbase error
+      userId: user?.user?.uid,
       mealType: tag,
     };
+    setLoading(true);
     await axios
       .get(
         `https://diabeticapp-backend.onrender.com/api/getDataByMealType/Date?userId=${params.userId}&mealType=${params.mealType}`
       )
       .then((res) => {
+        setLoading(false);
         setFoodItems(res?.data ? res?.data?.mealItems : []);
         setTotalCarbs(res?.data ? res?.data?.totalCarbs : "");
         setInsulinDose(res?.data ? res?.data?.insulinDose : 0);
         console.log("Data:", res, res?.data ? res?.data?.mealItems : []);
       })
       .catch((e) => {
+        setLoading(false);
         console.log("Error : ", e);
       });
   };
@@ -79,10 +87,20 @@ const ViewFoodItem = ({ navigation, route }) => {
         </List.Section>
       ) : (
         <View style={styles.emptyCartContainer}>
-          <Text style={styles.message}>You have no Food Items!!</Text>
-          <Button mode="contained" onPress={onAddFood} style={styles.button}>
-            Add Food Here
-          </Button>
+          {loading ? (
+            <ActivityIndicator size="large" style={styles.activityIndicator} />
+          ) : (
+            <>
+              <Text style={styles.message}>You have no Food Items!!</Text>
+              <Button
+                mode="contained"
+                onPress={onAddFood}
+                style={styles.button}
+              >
+                Add Food Here
+              </Button>
+            </>
+          )}
         </View>
       )}
       <Divider />
@@ -142,5 +160,10 @@ const styles = StyleSheet.create({
   },
   view: {
     padding: 16,
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
