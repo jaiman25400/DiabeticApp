@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Button, Divider, Text } from "react-native-paper";
 import { firebase } from "../config";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { ClearFoodCart } from "../redux/actions/actionTypes";
 import ProgressBar from "react-native-progress/Bar";
+import AddCarbsModal from "../ui/addCarbsModel";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [totalCarbs, setTotalCarbs] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const [carbsConsumed, setCarbsConsumed] = useState(0);
   const totalCarbsGoal = 150;
+
+  // Get the current date
+  const currentDate = new Date();
+
+  // Extract the individual components of the date
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1; // Months are zero-based, so we add 1
+  const day = currentDate.getDate();
+
+  // Format the date string
+  const formattedDate = `${day}/${month}/${year}`;
 
   // This is called every time user's lands on Home Screen
   useFocusEffect(
@@ -99,13 +112,14 @@ const HomeScreen = ({ navigation }) => {
     getCarbsDetails(user?.uid);
   }, []);
 
-  const getTotalCarbs = (tag) => {
-    let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
-    return carbs ? `  (Carbs - ${carbs}g)` : null;
-  };
   const getTotalCarbsNum = (tag) => {
     let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
     return carbs ? carbs : 0;
+  };
+
+  const handleSaveBloodGlucose = (data) => {
+    console.log("BloodGlucose:", data);
+    setModalVisible(false);
   };
 
   const getProgressBarPercentage = () => {
@@ -117,8 +131,28 @@ const HomeScreen = ({ navigation }) => {
   const progressColor = "#1356ba";
   const backgroundColor = "#454241";
 
+  const MealButton = ({ mealType }) => {
+    return (
+      <Button
+        mode="contained"
+        onPress={() => addFoodLog(mealType)}
+        style={styles.button}
+        contentStyle={styles.buttonContent}
+      >
+        <View>
+          <Text style={styles.mealTypeText}>Add {mealType}</Text>
+          <Text style={styles.carbsText}>
+            Carbs Consumed - {getTotalCarbsNum(mealType)}g
+          </Text>
+        </View>
+      </Button>
+    );
+  };
+
   return (
     <View style={styles.container}>
+      <Text style={styles.dateText}>Today</Text>
+      <Text style={styles.date}>{formattedDate}</Text>
       <View style={{ marginBottom: 20 }}>
         <ProgressBar
           progress={getProgressBarPercentage()}
@@ -128,7 +162,6 @@ const HomeScreen = ({ navigation }) => {
           unfilledColor={backgroundColor}
           borderWidth={0}
         />
-        <Divider />
         <Text
           style={{
             alignSelf: "center",
@@ -138,39 +171,30 @@ const HomeScreen = ({ navigation }) => {
           CARBS : {carbsConsumed}/{totalCarbsGoal}
         </Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="contained"
-          style={[styles.button, styles.breakfastButton]}
-          onPress={() => addFoodLog("Breakfast")}
-          contentStyle={styles.buttonContent}
-        >
-          Breakfast
-          {getTotalCarbs("Breakfast")}
-        </Button>
+      <View style={styles.buttoncontainer}>
+        <MealButton mealType="Breakfast" />
+        <MealButton mealType="Lunch" />
+        <MealButton mealType="Dinner" />
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="contained"
-          style={[styles.button, styles.lunchButton]}
-          onPress={() => addFoodLog("Lunch")}
-          contentStyle={styles.buttonContent}
-        >
-          Lunch
-          {getTotalCarbs("Lunch")}
-        </Button>
+      <View
+        style={{
+          position: "absolute",
+          margin: 16,
+          bottom: 100,
+        }}
+      >
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Text style={{ fontSize: 20, color: "#1356ba" }}>
+            Add Blood Glucose Reading
+          </Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          mode="contained"
-          style={[styles.button, styles.dinnerButton]}
-          onPress={() => addFoodLog("Dinner")}
-          contentStyle={styles.buttonContent}
-        >
-          Dinner
-          {getTotalCarbs("Dinner")}
-        </Button>
-      </View>
+      <AddCarbsModal
+        visible={modalVisible}
+        placeholder={"Enter Blood-glusoce reading"}
+        onDismiss={() => setModalVisible(false)}
+        onSave={handleSaveBloodGlucose}
+      />
     </View>
   );
 };
@@ -182,6 +206,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: "10%",
     padding: 16,
+    backgroundColor: "",
   },
   cycleContainer: {
     marginBottom: "10%",
@@ -213,20 +238,6 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -50 }, { translateY: -9 }],
     color: "black",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 10,
-  },
-  button: {
-    flex: 1,
-    marginHorizontal: 8,
-    justifyContent: "flex-start",
-  },
-  buttonContent: {
-    height: 65,
-    width: 340,
-  },
   breakfastButton: {
     backgroundColor: "#008b8b",
   },
@@ -245,6 +256,44 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
+  },
+  button: {
+    marginBottom: 20,
+    paddingHorizontal: 15,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    width: 250,
+    height: 80,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  mealTypeText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+  },
+  carbsText: {
+    fontSize: 14,
+    color: "white",
+  },
+  buttoncontainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    padding: 20,
+  },
+  dateText: {
+    textDecorationLine: "underline",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  date: {
+    fontSize: 24,
+    paddingBottom: 20,
+    fontWeight: "bold",
+    color: "#2196F3", // Customize the color to your preference
   },
 });
 

@@ -79,6 +79,8 @@ const ViewFoodItem = ({ navigation, route }) => {
           {foodItems?.map((item, index) => (
             <List.Item
               key={index}
+              titleEllipsizeMode="tail"
+              titleNumberOfLines={5}
               title={item.description}
               description={`Carbs: ${getCarbs(item)}`}
               right={() => <RightListView item={item} />}
