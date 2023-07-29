@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
@@ -10,14 +10,18 @@ import {
   List,
   Text,
 } from "react-native-paper";
+import AddCarbsModal from "../ui/addCarbsModel";
 
 const ViewFoodItem = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
   const { tag } = route?.params;
+  const [objectId, setObjectId] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [totalCarbs, setTotalCarbs] = useState("");
   const [insulinDose, setInsulinDose] = useState(0);
+  const [bloodGlucose, setBloodGlucose] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const getFoodItems = async () => {
     let params = {
@@ -34,7 +38,32 @@ const ViewFoodItem = ({ navigation, route }) => {
         setFoodItems(res?.data ? res?.data?.mealItems : []);
         setTotalCarbs(res?.data ? res?.data?.totalCarbs : "");
         setInsulinDose(res?.data ? res?.data?.insulinDose : 0);
+        setObjectId(res?.data ? res?.data?._id : null);
+        setBloodGlucose(
+          res?.data?.bloodGlucoseLevel ? res?.data?.bloodGlucoseLevel : 0
+        );
         console.log("Data:", res, res?.data ? res?.data?.mealItems : []);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.log("Error : ", e);
+      });
+  };
+
+  const addGloodGlucose = async (data) => {
+    let params = {
+      _id: objectId,
+      bloodGlucoseLevel: data,
+    };
+    setLoading(true);
+    await axios
+      .put(
+        `https://diabeticapp-backend.onrender.com/api/addBloodGlucose`,
+        params
+      )
+      .then((res) => {
+        setLoading(false);
+        navigation.goBack();
       })
       .catch((e) => {
         setLoading(false);
@@ -45,6 +74,11 @@ const ViewFoodItem = ({ navigation, route }) => {
   useEffect(() => {
     getFoodItems();
   }, []);
+
+  const handleSaveBloodGlucose = (data) => {
+    addGloodGlucose(data);
+    setModalVisible(false);
+  };
 
   const getCarbs = (item) => {
     let carbs = 0;
@@ -116,16 +150,28 @@ const ViewFoodItem = ({ navigation, route }) => {
               Total Insulin Dose - {insulinDose} g
             </Text>
           ) : null}
+          {bloodGlucose > 0 ? (
+            <Text variant="titleMedium">
+              Total Blood Glucose Level - {bloodGlucose} g
+            </Text>
+          ) : null}
         </View>
       ) : null}
-      <Button
-        mode="contained"
-        disabled
-        style={styles.buttonStyle}
-        onPress={onAddFood}
-      >
-        Add Food
-      </Button>
+      <AddCarbsModal
+        visible={modalVisible}
+        placeholder={"Enter Blood-glusoce reading"}
+        onDismiss={() => setModalVisible(false)}
+        onSave={handleSaveBloodGlucose}
+      />
+      {bloodGlucose == 0 && foodItems?.length > 0 ? (
+        <View style={styles.addGlucose}>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Text style={{ fontSize: 20, color: "#1356ba" }}>
+              Add Blood Glucose Reading
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -165,6 +211,10 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addGlucose: {
     justifyContent: "center",
     alignItems: "center",
   },

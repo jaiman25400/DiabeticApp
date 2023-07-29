@@ -7,12 +7,10 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { ClearFoodCart } from "../redux/actions/actionTypes";
 import ProgressBar from "react-native-progress/Bar";
-import AddCarbsModal from "../ui/addCarbsModel";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [totalCarbs, setTotalCarbs] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
   const [carbsConsumed, setCarbsConsumed] = useState(0);
   const totalCarbsGoal = 150;
 
@@ -114,11 +112,6 @@ const HomeScreen = ({ navigation }) => {
     return Number(carbs > 0 ? carbs?.toFixed(2) : 0);
   };
 
-  const handleSaveBloodGlucose = (data) => {
-    console.log("BloodGlucose:", data);
-    setModalVisible(false);
-  };
-
   const getProgressBarPercentage = () => {
     return carbsConsumed > 0 && totalCarbsGoal > 0
       ? carbsConsumed / totalCarbsGoal
@@ -179,19 +172,7 @@ const HomeScreen = ({ navigation }) => {
           margin: 16,
           bottom: 100,
         }}
-      >
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Text style={{ fontSize: 20, color: "#1356ba" }}>
-            Add Blood Glucose Reading
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <AddCarbsModal
-        visible={modalVisible}
-        placeholder={"Enter Blood-glusoce reading"}
-        onDismiss={() => setModalVisible(false)}
-        onSave={handleSaveBloodGlucose}
-      />
+      ></View>
     </View>
   );
 };
