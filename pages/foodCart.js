@@ -21,6 +21,7 @@ const FoodCart = ({ navigation, route }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  console.log("User her:", user?.userProfInfo?.userProfData);
   const foodData = useSelector((state) => state.api);
   const foodItems = useSelector((state) => state.addFood);
   const totalCarbs =
@@ -37,14 +38,26 @@ const FoodCart = ({ navigation, route }) => {
   }, [foodData]);
 
   const onSave = async () => {
+    let userICR;
+
+    if (tag == "Breakfast") {
+      userICR = user?.userProfInfo?.userProfData.bfICR;
+    } else if (tag == "Lunch") {
+      userICR = user?.userProfInfo?.userProfData.lhICR;
+    } else {
+      userICR = user?.userProfInfo?.userProfData.dnICR;
+    }
+    console.log("icc :", userICR);
     let params = {
       userId: user?.user?.uid,
       mealItems: foodItems.foodItems,
       totalCarbs: totalCarbs,
       mealType: tag,
       insulinDose: insulinDose,
+      userCRR: user?.userProfInfo?.userProfData.crr,
+      userICR: userICR,
     };
-    //console.log("params:", params);
+    console.log("params:", params);
     await axios
       .post("https://diabeticapp-backend.onrender.com/api/submitData", params)
       .then(() => {
