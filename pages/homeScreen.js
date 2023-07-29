@@ -39,11 +39,8 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     let count = 0;
-    count =
-      count +
-      getTotalCarbsNum("Breakfast") +
-      getTotalCarbsNum("Lunch") +
-      getTotalCarbsNum("Dinner");
+    count = count + getTotalCarbsNum("Breakfast");
+    getTotalCarbsNum("Lunch") + getTotalCarbsNum("Dinner");
     setCarbsConsumed(count);
   }, [totalCarbs]);
 
@@ -114,7 +111,7 @@ const HomeScreen = ({ navigation }) => {
 
   const getTotalCarbsNum = (tag) => {
     let carbs = totalCarbs?.find((x) => x.mealType == tag)?.totalCarbs;
-    return carbs ? carbs : 0;
+    return Number(carbs > 0 ? carbs?.toFixed(2) : 0);
   };
 
   const handleSaveBloodGlucose = (data) => {
