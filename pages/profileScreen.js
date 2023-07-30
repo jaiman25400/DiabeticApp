@@ -11,8 +11,11 @@ import { TextInput, Button, Title, Subheading } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { firebase } from "../config";
 import { TimePickerModal } from "react-native-paper-dates";
+import { useIsFocused } from "@react-navigation/native";
 
 const ProfileScreen = ({ navigation }) => {
+  const isFocused = useIsFocused();
+
   const [userStateData, setUserStateData] = useState({});
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
@@ -120,55 +123,60 @@ const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = firebase.auth().currentUser;
+    if (isFocused) {
+      const fetchUserData = async () => {
+        const user = firebase.auth().currentUser;
 
-      if (user) {
-        const userId = user.uid;
-        const userDocRef = firebase.firestore().collection("users").doc(userId);
-        const userProfRef = firebase
-          .firestore()
-          .collection("userProfile")
-          .doc(userId);
+        if (user) {
+          const userId = user.uid;
+          const userDocRef = firebase
+            .firestore()
+            .collection("users")
+            .doc(userId);
+          const userProfRef = firebase
+            .firestore()
+            .collection("userProfile")
+            .doc(userId);
 
-        const userDoc = await userDocRef.get();
-        const userProf = await userProfRef.get();
+          const userDoc = await userDocRef.get();
+          const userProf = await userProfRef.get();
 
-        if (userDoc.exists) {
-          const userData = userDoc.data();
-          setUserStateData(userData);
-          dispatch({
-            type: "userData",
-            payload: { userData },
-          });
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            setUserStateData(userData);
+            dispatch({
+              type: "userData",
+              payload: { userData },
+            });
+          } else {
+            console.log("User data not found.");
+          }
+
+          if (userProf.exists) {
+            const userProfData = userProf.data();
+            setWeight(userProfData.weight);
+            setHeight(userProfData.height);
+            setAge(userProfData.age);
+            setBreakfastStartHour(userProfData.breakfastStartHour);
+            setBreakfastEndHour(userProfData.breakfastEndHour);
+            setLunchStartHour(userProfData.lunchStartHour);
+            setLunchEndHour(userProfData.lunchEndHour);
+            setDinnerStartHour(userProfData.dinnerStartHour);
+            setDinnerEndHour(userProfData.dinnerEndHour);
+            setBfICR(userProfData.bfICR);
+            setLhICR(userProfData.lhICR);
+            setDnICR(userProfData.dnICR);
+            setCRR(userProfData.crr);
+          } else {
+            console.log("User profile data not found.");
+          }
         } else {
-          console.log("User data not found.");
+          console.log("No user is currently logged in.");
         }
-
-        if (userProf.exists) {
-          const userProfData = userProf.data();
-          setWeight(userProfData.weight);
-          setHeight(userProfData.height);
-          setAge(userProfData.age);
-          setBreakfastStartHour(userProfData.breakfastStartHour);
-          setBreakfastEndHour(userProfData.breakfastEndHour);
-          setLunchStartHour(userProfData.lunchStartHour);
-          setLunchEndHour(userProfData.lunchEndHour);
-          setDinnerStartHour(userProfData.dinnerStartHour);
-          setDinnerEndHour(userProfData.dinnerEndHour);
-          setBfICR(userProfData.bfICR);
-          setLhICR(userProfData.lhICR);
-          setDnICR(userProfData.dnICR);
-          setCRR(userProfData.crr);
-        } else {
-          console.log("User profile data not found.");
-        }
-      } else {
-        console.log("No user is currently logged in.");
-      }
-    };
-    fetchUserData();
-  }, []);
+      };
+      fetchUserData();
+    }
+  }, [isFocused]);
 
   const [next, setNext] = useState(false);
   const handleNext = () => {

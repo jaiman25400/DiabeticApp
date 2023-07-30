@@ -11,6 +11,7 @@ import {
   Text,
 } from "react-native-paper";
 import AddCarbsModal from "../ui/addCarbsModel";
+import { firebase } from "../config";
 
 const ViewFoodItem = ({ navigation, route }) => {
   const user = useSelector((state) => state.user);
@@ -22,6 +23,25 @@ const ViewFoodItem = ({ navigation, route }) => {
   const [bloodGlucose, setBloodGlucose] = useState(0);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [userICR, setUserICR] = useState("");
+
+  const getUpdatedUserICR = async () => {
+    console.log("HER: ", user?.user?.uid, tag);
+    await axios
+      .get("https://diabeticapp-backend.onrender.com/api/updateUserICR", {
+        params: {
+          userId: user?.user?.uid,
+          mealType: tag,
+        },
+      })
+      .then((res) => {
+        console.log("Res :", res);
+        setUserICR(res.data);
+      })
+      .catch((err) => {
+        console.log("Err :", err);
+      });
+  };
 
   const getFoodItems = async () => {
     let params = {
@@ -72,6 +92,7 @@ const ViewFoodItem = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    getUpdatedUserICR();
     getFoodItems();
   }, []);
 
@@ -92,6 +113,40 @@ const ViewFoodItem = ({ navigation, route }) => {
     navigation.navigate("FoodSearch", {
       tag: tag,
     });
+  };
+
+  const updateUserICR = async () => {
+    console.log("Update UserICR");
+    try {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const userId = user.uid;
+        const userDocRef = firebase
+          .firestore()
+          .collection("userProfile")
+          .doc(userId);
+        let data = {};
+        if (tag == "Breakfast") {
+          data = {
+            bfICR: userICR,
+          };
+        } else if (tag == "Lunch") {
+          data = {
+            lhICR: userICR,
+          };
+        } else {
+          data = {
+            dnICR: userICR,
+          };
+        }
+        await userDocRef.set(data, { merge: true });
+        console.log("Data to Deliver:", data);
+        alert("Updated successfully");
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const RightListView = ({ item }) => {
@@ -134,6 +189,14 @@ const ViewFoodItem = ({ navigation, route }) => {
                 style={styles.button}
               >
                 Add Food Here
+              </Button>
+              <Text style={styles.messageICR}>Update Your ICR !!</Text>
+              <Button
+                mode="contained"
+                onPress={updateUserICR}
+                style={styles.button}
+              >
+                {userICR}
               </Button>
             </>
           )}
@@ -191,6 +254,11 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 24,
     marginBottom: 16,
+  },
+  messageICR: {
+    fontSize: 20,
+    marginTop: 18,
+    marginBottom: 10,
   },
   button: {
     marginTop: 16,
